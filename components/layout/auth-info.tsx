@@ -1,11 +1,7 @@
-import { auth } from "@/lib/auth";
-
-import { headers } from "next/headers";
+import { getSession } from "@/lib/auth";
 
 export default async function AuthInfo() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getSession();
 
   return (
     <div className="flex items-center transition gap-3 select-none rounded-full p-1 pr-3">

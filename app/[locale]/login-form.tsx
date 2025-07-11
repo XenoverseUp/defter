@@ -10,7 +10,7 @@ import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "@/lib/server/users";
+import { signIn } from "@/lib/server-actions/users";
 import { toast } from "sonner";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { useState } from "react";

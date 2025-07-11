@@ -1,4 +1,22 @@
-import { pgTable, text, timestamp, boolean, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, integer, uuid, pgEnum } from "drizzle-orm/pg-core";
+
+export const gradeEnum = pgEnum("grade", ["middle-school", "high-school"]);
+
+export const student = pgTable("student", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  grade: gradeEnum("grade").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+});
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -56,4 +74,11 @@ export const verification = pgTable("verification", {
   updatedAt: timestamp("updated_at").$defaultFn(() => /* @__PURE__ */ new Date()),
 });
 
-export const schema = { user, session, account, verification };
+export const schema = {
+  student,
+  user,
+  session,
+  account,
+  verification,
+  gradeEnum,
+};

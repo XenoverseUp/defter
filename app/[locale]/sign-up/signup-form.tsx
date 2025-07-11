@@ -9,7 +9,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { signUp } from "@/lib/server/users";
+import { signUp } from "@/lib/server-actions/users";
 import { toast } from "sonner";
 import { useRouter, Link } from "@/i18n/navigation";
 import { useState } from "react";

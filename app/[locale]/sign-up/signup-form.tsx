@@ -8,14 +8,18 @@ import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "./ui/form";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { signUp } from "@/lib/server/users";
 import { toast } from "sonner";
 import { useRouter, Link } from "@/i18n/navigation";
+import { useState } from "react";
+import { LoaderIcon } from "lucide-react";
 
 export function SignupForm({ className, ...props }: React.ComponentProps<"form">) {
   const t = useTranslations("SignIn");
   const v = useTranslations("validation");
+
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
@@ -60,12 +64,15 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"form">
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
     const { success, message } = await signUp({ ...values });
 
     if (success) {
       router.push("/dashboard");
       toast.success(message);
     } else toast.error(message);
+
+    setLoading(false);
   }
 
   return (
@@ -133,10 +140,9 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"form">
           />
 
           <Button type="submit" className="w-full">
-            {t("signup")}
+            {loading ? <LoaderIcon className="animate-spin" /> : t("signup")}
           </Button>
 
-          {/*  */}
           <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
             <span className="bg-background text-muted-foreground relative z-10 px-2">{t("continue-with")}</span>
           </div>

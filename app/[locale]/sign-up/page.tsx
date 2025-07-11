@@ -1,7 +1,7 @@
 import { Barrel } from "lucide-react";
 import LocaleSwitcher from "@/components/ui/locale";
 
-import { SignupForm } from "@/components/signup-form";
+import { SignupForm } from "./signup-form";
 import Image from "next/image";
 
 export default function LoginPage() {
@@ -10,7 +10,7 @@ export default function LoginPage() {
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <header className="flex justify-between w-full  gap-2">
           <a href="#" className="flex items-center gap-2 font-medium">
-            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
+            <div className="bg-sky-500 text-primary-foreground flex size-6 items-center justify-center rounded-md">
               <Barrel className="size-4" />
             </div>
             Defter.

@@ -35,6 +35,7 @@
     "passwords-mismatch": "Passwords do not match. Please try again.",
     "logged-in": "Logged in successfully.",
     "unknown-error": "An unknown error occured.",
-    "signed-up": "Signed up successfully."
+    "signed-up": "Signed up successfully.",
+    "invalid-credentials": "Invalid email or password."
   }
 }

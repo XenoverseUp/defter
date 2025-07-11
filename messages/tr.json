@@ -2,7 +2,7 @@
   "Login": {
     "title": "Tekrar hoşgeldin!",
     "description": "Bu formu doldurarak Defter hesabına erişebilirsin",
-    "email-label": "Email",
+    "email-label": "E-Posta",
     "password-label": "Şifre",
     "forgot-password-label": "Şifreni mi unuttun?",
     "login": "Giriş Yap",
@@ -15,7 +15,7 @@
     "title": "Hesap Oluştur",
     "description": "Bu formu doldurarak bir hesap oluşturabilirsin",
     "name-label": "İsim",
-    "email-label": "Email",
+    "email-label": "E-Posta",
     "password-label": "Şifre",
     "confirm-label": "Şifreni Onayla",
     "login": "Giriş Yap",
@@ -35,6 +35,7 @@
     "passwords-mismatch": "Parolalar eşleşmiyor. Lütfen tekrar deneyin.",
     "logged-in": "Başarıyla giriş yapıldı.",
     "unknown-error": "Bilinmeyen bir hata meydana geldi.",
-    "signed-up": "Başarıyla hesap oluşturuldu."
+    "signed-up": "Başarıyla hesap oluşturuldu.",
+    "invalid-credentials": "Yanlış e-posta veya şifre girildi."
   }
 }

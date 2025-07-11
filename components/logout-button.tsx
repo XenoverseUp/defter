@@ -9,8 +9,8 @@ import { useRouter } from "@/i18n/navigation";
 export function LogoutButton() {
   const router = useRouter();
 
-  function handleLogout() {
-    authClient.signOut();
+  async function handleLogout() {
+    await authClient.signOut();
     router.push("/");
   }
 

@@ -7,14 +7,15 @@ import { useRouter, usePathname } from "next/navigation";
 export default function LocaleSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
+  const locale = useLocale();
 
   const switchLocale = (newLocale: string) => {
+    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=${60 * 60 * 24 * 365}`;
+
     const newPath = pathname.replace(/^\/(en|tr)/, `/${newLocale}`);
-    router.push(newPath);
+    router.replace(newPath);
     router.refresh();
   };
-
-  const locale = useLocale();
 
   return (
     <div className="flex items-center gap-2 text-sm">

@@ -40,7 +40,7 @@ export default async function RootLayout({ children, params: { locale } }: Props
     <html lang={locale} key={locale}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
-        <Toaster />
+        <Toaster position="top-center" />
       </body>
     </html>
   );

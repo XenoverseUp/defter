@@ -4,8 +4,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import Link from "next/link";
-
 import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -13,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "./ui/form";
 import { signUp } from "@/lib/server/users";
 import { toast } from "sonner";
-import { useRouter } from "@/i18n/navigation";
+import { useRouter, Link } from "@/i18n/navigation";
 
 export function SignupForm({ className, ...props }: React.ComponentProps<"form">) {
   const t = useTranslations("SignIn");
@@ -65,8 +63,8 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"form">
     const { success, message } = await signUp({ ...values });
 
     if (success) {
-      toast.success(message);
       router.push("/dashboard");
+      toast.success(message);
     } else toast.error(message);
   }
 

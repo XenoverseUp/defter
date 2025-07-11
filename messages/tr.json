@@ -24,6 +24,19 @@
     "already-account": "Zaten bir hesabın var mı?",
     "google": "Google ile devam et"
   },
+  "Dashboard": {
+    "title": "Öğrenci Listesi",
+    "subtitle": "Defter ile öğrencilerin programını planla.",
+    "create": "Oluştur",
+    "table": {
+      "first-name": "İsim",
+      "last-name": "Soyisim",
+      "grade": "Sınıf",
+      "middle-school": "Ortaokul",
+      "high-school": "Lise",
+      "footer": "öğrenci kaydı bulundu"
+    }
+  },
 
   "validation": {
     "name-too-short": "Lütfen tam adınızı girin (en az 3 karakter).",

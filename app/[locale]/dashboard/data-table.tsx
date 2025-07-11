@@ -1,15 +1,19 @@
 "use client";
 
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Payment, useColumns } from "./columns";
+import { useTranslations } from "next-intl";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+interface DataTableProps {
+  data: Payment[];
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable({ data }: DataTableProps) {
+  const columns = useColumns();
+  const t = useTranslations("Dashboard.table");
+
   const table = useReactTable({
     data,
     columns,
@@ -52,7 +56,9 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           </TableBody>
         </Table>
       </div>
-      <p className="text-center text-sm text-muted-foreground">{table.getRowCount()} students present.</p>
+      <p className="text-center text-sm text-muted-foreground">
+        {table.getRowCount()} {t("footer")}.
+      </p>
     </div>
   );
 }

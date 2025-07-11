@@ -24,6 +24,19 @@
     "already-account": "Already have an account?",
     "google": "Sign In with Google"
   },
+  "Dashboard": {
+    "title": "Student List",
+    "subtitle": "Access and manage your students with Defter.",
+    "create": "Create New",
+    "table": {
+      "first-name": "First Name",
+      "last-name": "Last Name",
+      "grade": "Grade",
+      "middle-school": "Middle School",
+      "high-school": "High School",
+      "footer": "students are present"
+    }
+  },
 
   "validation": {
     "name-too-short": "Please enter your full name (at least 3 characters).",

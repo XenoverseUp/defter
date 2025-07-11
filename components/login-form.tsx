@@ -1,12 +1,15 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
 
-export async function LoginForm({ className, ...props }: React.ComponentProps<"form">) {
-  const t = await getTranslations("Login");
+import { useTranslations } from "next-intl";
+
+export function LoginForm({ className, ...props }: React.ComponentProps<"form">) {
+  const t = useTranslations("Login");
 
   return (
     <form className={cn("flex flex-col gap-6", className)} {...props}>

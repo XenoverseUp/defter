@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { ReactNode } from "react";
+import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 
@@ -39,6 +40,7 @@ export default async function RootLayout({ children, params: { locale } }: Props
     <html lang={locale} key={locale}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
+        <Toaster />
       </body>
     </html>
   );

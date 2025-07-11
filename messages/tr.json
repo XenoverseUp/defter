@@ -23,5 +23,18 @@
     "continue-with": "Ya da bunları kullanarak devam et",
     "already-account": "Zaten bir hesabın var mı?",
     "google": "Google ile devam et"
+  },
+
+  "validation": {
+    "name-too-short": "Lütfen tam adınızı girin (en az 3 karakter).",
+    "email-invalid": "Lütfen geçerli bir e-posta adresi girin.",
+    "password-too-short": "Parola en az 8 karakter uzunluğunda olmalıdır.",
+    "password-too-long": "Parola 18 karakterden uzun olamaz.",
+    "confirm-password-too-short": "Lütfen parolanızı tekrar girin.",
+    "confirm-password-too-long": "Parola doğrulaması 18 karakterden uzun olamaz.",
+    "passwords-mismatch": "Parolalar eşleşmiyor. Lütfen tekrar deneyin.",
+    "logged-in": "Başarıyla giriş yapıldı.",
+    "unknown-error": "Bilinmeyen bir hata meydana geldi.",
+    "signed-up": "Başarıyla hesap oluşturuldu."
   }
 }

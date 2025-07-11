@@ -23,5 +23,18 @@
     "continue-with": "Or continue with",
     "already-account": "Already have an account?",
     "google": "Sign In with Google"
+  },
+
+  "validation": {
+    "name-too-short": "Please enter your full name (at least 3 characters).",
+    "email-invalid": "Please enter a valid email address.",
+    "password-too-short": "Password must be at least 8 characters long.",
+    "password-too-long": "Password cannot be longer than 18 characters.",
+    "confirm-password-too-short": "Please confirm your password.",
+    "confirm-password-too-long": "Password confirmation cannot be longer than 18 characters.",
+    "passwords-mismatch": "Passwords do not match. Please try again.",
+    "logged-in": "Logged in successfully.",
+    "unknown-error": "An unknown error occured.",
+    "signed-up": "Signed up successfully."
   }
 }

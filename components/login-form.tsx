@@ -54,7 +54,7 @@ export async function LoginForm({ className, ...props }: React.ComponentProps<"f
             />
             <path d="M1 1h22v22H1z" fill="none" />
           </svg>
-          Login with Google
+          {t("google")}
         </Button>
       </div>
       <div className="text-center text-sm">

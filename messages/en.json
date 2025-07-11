@@ -8,6 +8,20 @@
     "login": "Login",
     "signup": "Sign up",
     "continue-with": "Or continue with",
-    "no-account": "Don't have an account?"
+    "no-account": "Don't have an account?",
+    "google": "Login with Google"
+  },
+  "SignIn": {
+    "title": "Create an account",
+    "description": "Enter your email below to create a Defter account",
+    "name-label": "Name",
+    "email-label": "Email",
+    "password-label": "Password",
+    "confirm-label": "Confirm Password",
+    "login": "Login",
+    "signup": "Sign up",
+    "continue-with": "Or continue with",
+    "already-account": "Already have an account?",
+    "google": "Sign In with Google"
   }
 }

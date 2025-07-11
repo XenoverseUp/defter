@@ -3,36 +3,39 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
-export function SignupForm({ className, ...props }: React.ComponentProps<"form">) {
+export async function SignupForm({ className, ...props }: React.ComponentProps<"form">) {
+  const t = await getTranslations("SignIn");
+
   return (
     <form className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Create An Account</h1>
-        <p className="text-muted-foreground text-sm text-balance">Enter your email below to create a Defter account</p>
+        <h1 className="text-2xl font-bold">{t("title")}</h1>
+        <p className="text-muted-foreground text-sm text-balance">{t("description")}</p>
       </div>
       <div className="grid gap-6">
         <div className="grid gap-3">
-          <Label htmlFor="email">Name</Label>
+          <Label htmlFor="email">{t("name-label")}</Label>
           <Input id="name" type="text" placeholder="Can Durmus" required />
         </div>
         <div className="grid gap-3">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t("email-label")}</Label>
           <Input id="email" type="email" placeholder="m@example.com" required />
         </div>
         <div className="grid gap-3">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">{t("password-label")}</Label>
           <Input id="password" type="password" required />
         </div>
         <div className="grid gap-3">
-          <Label htmlFor="password">Confirm Password</Label>
+          <Label htmlFor="password">{t("confirm-label")}</Label>
           <Input id="password" type="password" required />
         </div>
         <Button type="submit" className="w-full">
-          Sign Up
+          {t("signup")}
         </Button>
         <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-          <span className="bg-background text-muted-foreground relative z-10 px-2">Or continue with</span>
+          <span className="bg-background text-muted-foreground relative z-10 px-2">{t("continue-with")}</span>
         </div>
         <Button variant="outline" className="w-full">
           <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
@@ -54,13 +57,13 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"form">
             />
             <path d="M1 1h22v22H1z" fill="none" />
           </svg>
-          Sign In with Google
+          {t("google")}
         </Button>
       </div>
       <div className="text-center text-sm">
-        Already have an account?{" "}
+        {t("already-account")}{" "}
         <Link href="/" className="underline underline-offset-4">
-          Login
+          {t("login")}
         </Link>
       </div>
     </form>

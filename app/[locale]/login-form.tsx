@@ -51,11 +51,12 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
     const { success, message } = await signIn({ ...values });
 
     if (success) {
-      router.push("/dashboard");
+      router.replace("/dashboard");
       toast.success(message);
-    } else toast.error(message);
-
-    setLoading(false);
+    } else {
+      setLoading(false);
+      toast.error(message);
+    }
   }
 
   return (

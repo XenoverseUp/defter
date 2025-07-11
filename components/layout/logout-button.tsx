@@ -16,7 +16,7 @@ export function LogoutButton() {
     try {
       await authClient.signOut();
       router.push("/");
-    } finally {
+    } catch {
       setLoading(false);
     }
   }

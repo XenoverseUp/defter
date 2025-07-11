@@ -68,11 +68,12 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"form">
     const { success, message } = await signUp({ ...values });
 
     if (success) {
-      router.push("/dashboard");
+      router.replace("/dashboard");
       toast.success(message);
-    } else toast.error(message);
-
-    setLoading(false);
+    } else {
+      toast.error(message);
+      setLoading(false);
+    }
   }
 
   return (

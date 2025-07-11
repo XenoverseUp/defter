@@ -1,0 +1,13 @@
+{
+  "Login": {
+    "title": "Welcome back!",
+    "description": "Enter your email below to login to your account",
+    "email-label": "Email",
+    "password-label": "Password",
+    "forgot-password-label": "Forgot your password?",
+    "login": "Login",
+    "signup": "Sign up",
+    "continue-with": "Or continue with",
+    "no-account": "Don't have an account?"
+  }
+}

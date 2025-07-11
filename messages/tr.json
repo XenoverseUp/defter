@@ -1,0 +1,13 @@
+{
+  "Login": {
+    "title": "Tekrar hoşgeldin!",
+    "description": "Bu formu doldurarak hesabına erişebilirsin",
+    "email-label": "Email",
+    "password-label": "Şifre",
+    "forgot-password-label": "Şifreni mi unuttun?",
+    "login": "Giriş Yap",
+    "signup": "Hesap Oluştur",
+    "continue-with": "Ya da bunları kullanarak devam et",
+    "no-account": "Hesabın yok mu?"
+  }
+}

@@ -15,16 +15,16 @@ const patchBodySchema = z.object({
 });
 
 export const PATCH = withAuthAndValidation({ params: paramsSchema, body: patchBodySchema }, async (user, req, { params, body }) => {
-  if (!body.firstName && !body.lastName && !body.grade) {
-    return new Response("No fields to update provided", { status: 400 });
-  }
+  if (!body.firstName && !body.lastName && !body.grade) return new Response("No fields to update provided", { status: 400 });
+
+  const { firstName, lastName, grade } = body;
 
   const updated = await db
     .update(student)
     .set({
-      ...(body.firstName && { firstName: body.firstName }),
-      ...(body.lastName && { lastName: body.lastName }),
-      ...(body.grade && { grade: body.grade }),
+      ...(firstName && { firstName }),
+      ...(lastName && { lastName }),
+      ...(grade && { grade }),
     })
     .where(and(eq(student.id, params.id), eq(student.userId, user.id)))
     .returning();

@@ -16,12 +16,14 @@ const createStudentSchema = z.object({
 });
 
 export const POST = withAuthAndValidation({ body: createStudentSchema }, async (user, _, { body }) => {
+  const { firstName, lastName, grade } = body;
+
   const inserted = await db
     .insert(student)
     .values({
-      firstName: body.firstName,
-      lastName: body.lastName,
-      grade: body.grade,
+      firstName,
+      lastName,
+      grade,
       userId: user.id,
     })
     .returning();

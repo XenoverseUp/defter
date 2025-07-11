@@ -82,12 +82,8 @@ export function withAuthAndValidation<
       validatedBody = bodyResult.data;
     }
 
-    if (schemas.body) {
-      // TS now knows body exists and matches schema type
-      return handler(user, req, { params: validatedParams, body: validatedBody as zInfer<BS> });
-    } else {
-      // TS knows body is undefined here
-      return handler(user, req, { params: validatedParams, body: undefined });
-    }
+    // @ts-ignore
+    if (schemas.body) return handler(user, req, { params: validatedParams, body: validatedBody as zInfer<BS> });
+    else return handler(user, req, { params: validatedParams, body: undefined });
   };
 }

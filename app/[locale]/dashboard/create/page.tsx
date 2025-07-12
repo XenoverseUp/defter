@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import CreateStudentForm from "./create-student-form";
+import { ScanEyeIcon, SignatureIcon, WholeWordIcon } from "lucide-react";
 
 const formSchema = z.object({
   firstName: z.string().min(1).min(3).max(32),
@@ -41,18 +42,33 @@ export default function Create() {
   }
 
   return (
-    <section className="max-w-3xl space-y-12 mx-auto py-10">
+    <Tabs className="max-w-3xl space-y-10 mx-auto py-10" defaultValue="form">
       <header className="space-y-4">
-        <div className="flex items-end justify-between">
+        <div className="flex items-end gap-4 justify-between">
           <div className="space-y-1">
-            <h1 className="text-xl font-semibold flex items-center gap-2">Create Student</h1>
+            <h1 className="text-xl font-semibold flex items-center gap-2">
+              <SignatureIcon />
+              Create Student
+            </h1>
             <p className="text-sm text-muted-foreground">Create and preview a student entry to track their progress.</p>
           </div>
-          <div>Preview | Form</div>
+          <TabsList>
+            <TabsTrigger value="form">
+              <WholeWordIcon />
+              Form
+            </TabsTrigger>
+            <TabsTrigger value="preview">
+              <ScanEyeIcon />
+              Preview
+            </TabsTrigger>
+          </TabsList>
         </div>
         <Separator />
       </header>
-      <CreateStudentForm {...{ form, onSubmit }} />
-    </section>
+      <TabsContent value="form">
+        <CreateStudentForm {...{ form, onSubmit }} />
+      </TabsContent>
+      <TabsContent value="preview">Preview amk!</TabsContent>
+    </Tabs>
   );
 }

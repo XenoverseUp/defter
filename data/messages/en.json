@@ -38,6 +38,41 @@
       "footer": "students are present"
     }
   },
+  "CreateStudent": {
+    "title": "Create Student",
+    "subtitle": "Create and preview a student entry to track their progress.",
+    "actions": {
+      "edit": "Edit",
+      "preview": "Preview"
+    },
+    "form": {
+      "create": "Create Student",
+      "cancel": "Cancel",
+      "firstName": {
+        "label": "First Name"
+      },
+      "lastName": {
+        "label": "Last Name"
+      },
+      "grade": {
+        "label": "Grade",
+        "description": "The grade of the students determines the study programs available.",
+        "middle-school": "Middle School",
+        "high-school": "High School"
+      },
+      "location": {
+        "label": "Location"
+      },
+      "phone": {
+        "label": "Phone Number"
+      },
+      "notes": {
+        "label": "Notes",
+        "description": "You can take notes about the students.",
+        "placeholder": "The student is..."
+      }
+    }
+  },
 
   "validation": {
     "name-too-short": "Please enter your full name (at least 3 characters).",
@@ -59,5 +94,9 @@
     "state-label": "Select State...",
     "no-state-found": "No state found.",
     "search-state-placeholder": "Search state..."
+  },
+  "phone-input": {
+    "search-country-placeholder": "Search country...",
+    "no-country-found": "No country found."
   }
 }

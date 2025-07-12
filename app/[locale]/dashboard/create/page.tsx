@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import CreateStudentForm from "./create-student-form";
 import { ScanEyeIcon, SignatureIcon, WholeWordIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const formSchema = z.object({
   firstName: z.string().min(1).min(3).max(32),
@@ -31,6 +32,8 @@ export default function Create() {
     },
   });
 
+  const t = useTranslations("CreateStudent");
+
   function onSubmit(values: FormSchema) {
     try {
       console.log(values);
@@ -48,18 +51,18 @@ export default function Create() {
           <div className="space-y-1">
             <h1 className="text-xl font-semibold flex items-center gap-2">
               <SignatureIcon />
-              Create Student
+              {t("title")}
             </h1>
-            <p className="text-sm text-muted-foreground">Create and preview a student entry to track their progress.</p>
+            <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
           </div>
           <TabsList>
             <TabsTrigger value="form">
               <WholeWordIcon />
-              Edit
+              {t("actions.edit")}
             </TabsTrigger>
             <TabsTrigger value="preview">
               <ScanEyeIcon />
-              Preview
+              {t("actions.preview")}
             </TabsTrigger>
           </TabsList>
         </div>

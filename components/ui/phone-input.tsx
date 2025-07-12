@@ -1,4 +1,4 @@
-import { ComponentProps, ComponentRef, forwardRef, ForwardRefExoticComponent, useRef, useState } from "react";
+import { ComponentProps, ComponentRef, forwardRef, ForwardRefExoticComponent, useEffect, useRef, useState } from "react";
 import { CheckIcon, ChevronsUpDown } from "lucide-react";
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { useLocale, useTranslations } from "next-intl";
 
 type PhoneInputProps = Omit<ComponentProps<"input">, "onChange" | "value" | "ref"> &
   Omit<RPNInput.Props<typeof RPNInput.default>, "onChange"> & {
@@ -17,6 +18,19 @@ type PhoneInputProps = Omit<ComponentProps<"input">, "onChange" | "value" | "ref
 
 const PhoneInput: ForwardRefExoticComponent<PhoneInputProps> = forwardRef<ComponentRef<typeof RPNInput.default>, PhoneInputProps>(
   ({ className, onChange, value, ...props }, ref) => {
+    const locale = useLocale();
+    const [labels, setLabels] = useState<Record<string, string> | undefined>(undefined);
+
+    useEffect(() => {
+      if (locale === "tr") {
+        import("react-phone-number-input/locale/tr.json").then((mod) => {
+          setLabels(mod.default);
+        });
+      } else {
+        setLabels(undefined);
+      }
+    }, [locale]);
+
     return (
       <RPNInput.default
         ref={ref}
@@ -26,6 +40,8 @@ const PhoneInput: ForwardRefExoticComponent<PhoneInputProps> = forwardRef<Compon
         inputComponent={InputComponent}
         smartCaret={false}
         value={value || undefined}
+        limitMaxLength
+        labels={labels}
         /**
          * Handles the onChange event.
          *
@@ -61,6 +77,7 @@ const CountrySelect = ({ disabled, value: selectedCountry, options: countryList,
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [searchValue, setSearchValue] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const t = useTranslations("phone-input");
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen} modal>
@@ -68,10 +85,11 @@ const CountrySelect = ({ disabled, value: selectedCountry, options: countryList,
         <Button
           type="button"
           variant="outline"
-          className="flex gap-1 rounded-e-none rounded-s-md border-r-0 px-3 focus:z-10"
+          className="flex gap-2 w-26 rounded-e-none rounded-s-md border-r-0 px-3 focus:z-10"
           disabled={disabled}
         >
           <FlagComponent country={selectedCountry} countryName={selectedCountry} />
+          <span className="text-muted-foreground text-xs ml-auto">{`+${selectedCountry ? RPNInput.getCountryCallingCode(selectedCountry) : "N/A"}`}</span>
           <ChevronsUpDown className={cn("-mr-2 size-4 opacity-50", disabled ? "hidden" : "opacity-100")} />
         </Button>
       </PopoverTrigger>
@@ -90,11 +108,11 @@ const CountrySelect = ({ disabled, value: selectedCountry, options: countryList,
                 }
               }, 0);
             }}
-            placeholder="Search country..."
+            placeholder={t("search-country-placeholder")}
           />
           <CommandList>
             <ScrollArea ref={scrollAreaRef} className="h-72">
-              <CommandEmpty>No country found.</CommandEmpty>
+              <CommandEmpty>{t("no-country-found")}</CommandEmpty>
               <CommandGroup>
                 {countryList.map(({ value, label }) =>
                   value ? (
@@ -143,7 +161,7 @@ const FlagComponent = ({ country, countryName }: RPNInput.FlagProps) => {
   const Flag = flags[country];
 
   return (
-    <span className="flex h-4 w-6 overflow-hidden rounded-sm bg-foreground/20 [&_svg:not([class*='size-'])]:size-full">
+    <span className="flex shrink-0 h-4 w-6 overflow-hidden rounded-[2px] bg-foreground/20 [&_svg:not([class*='size-'])]:size-full">
       {Flag && <Flag title={countryName} />}
     </span>
   );

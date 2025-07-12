@@ -10,12 +10,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { PlusCircleIcon, ShapesIcon, SigmaIcon } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
+import { useTranslations } from "next-intl";
+
 interface Props {
   form: UseFormReturn<FormSchema>;
   onSubmit: (values: FormSchema) => void;
 }
 
 export default function CreateStudentForm({ form, onSubmit }: Props) {
+  const t = useTranslations("CreateStudent.form");
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 ">
@@ -26,7 +30,7 @@ export default function CreateStudentForm({ form, onSubmit }: Props) {
               name="firstName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>First Name *</FormLabel>
+                  <FormLabel>{t("firstName.label")} *</FormLabel>
                   <FormControl>
                     <Input placeholder="Muhammed Can" type="text" {...field} />
                   </FormControl>
@@ -43,7 +47,7 @@ export default function CreateStudentForm({ form, onSubmit }: Props) {
               name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Last Name *</FormLabel>
+                  <FormLabel>{t("lastName.label")} *</FormLabel>
                   <FormControl>
                     <Input placeholder="Durmus" type="" {...field} />
                   </FormControl>
@@ -60,8 +64,8 @@ export default function CreateStudentForm({ form, onSubmit }: Props) {
           name="grade"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Grade *</FormLabel>
-              <FormDescription>The grade of the students determines the study programs available.</FormDescription>
+              <FormLabel>{t("grade.label")} *</FormLabel>
+              <FormDescription>{t("grade.description")}</FormDescription>
               <FormMessage />
               <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid h-14 grid-cols-2 gap-4 pt-2">
                 <FormItem>
@@ -72,7 +76,7 @@ export default function CreateStudentForm({ form, onSubmit }: Props) {
 
                     <Button asChild type="button" variant="outline" className="size-full ring-sky-500 justify-start pl-4!">
                       <div>
-                        <ShapesIcon /> Middle School
+                        <ShapesIcon /> {t("grade.middle-school")}
                       </div>
                     </Button>
                   </FormLabel>
@@ -85,7 +89,7 @@ export default function CreateStudentForm({ form, onSubmit }: Props) {
                     <Button asChild type="button" variant="outline" className="size-full ring-orange-500 justify-start pl-4!">
                       <div>
                         <SigmaIcon />
-                        High School
+                        {t("grade.high-school")}
                       </div>
                     </Button>
                   </FormLabel>
@@ -100,7 +104,7 @@ export default function CreateStudentForm({ form, onSubmit }: Props) {
           name="location"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Location</FormLabel>
+              <FormLabel>{t("location.label")}</FormLabel>
               <FormControl>
                 <LocationSelector
                   onCountryChange={(country) => {
@@ -121,9 +125,9 @@ export default function CreateStudentForm({ form, onSubmit }: Props) {
           name="phone"
           render={({ field }) => (
             <FormItem className="flex flex-col items-start">
-              <FormLabel>Phone Number</FormLabel>
+              <FormLabel>{t("phone.label")}</FormLabel>
               <FormControl className="w-full">
-                <PhoneInput placeholder="555 090 7480" {...field} defaultCountry="TR" />
+                <PhoneInput placeholder="555 090 74 80" {...field} defaultCountry="TR" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -135,11 +139,11 @@ export default function CreateStudentForm({ form, onSubmit }: Props) {
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Notes</FormLabel>
+              <FormLabel>{t("notes.label")}</FormLabel>
               <FormControl>
-                <Textarea placeholder="The student is..." className="resize-none" {...field} />
+                <Textarea placeholder={t("notes.placeholder")} className="resize-none" {...field} />
               </FormControl>
-              <FormDescription>You can take notes about the students.</FormDescription>
+              <FormDescription>{t("notes.description")}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -148,10 +152,10 @@ export default function CreateStudentForm({ form, onSubmit }: Props) {
         <div className="w-full flex items-center gap-2">
           <Button type="submit">
             <PlusCircleIcon />
-            Create Student
+            {t("create")}
           </Button>
           <Button type="button" variant="link" asChild>
-            <Link href="/dashboard">Cancel</Link>
+            <Link href="/dashboard">{t("cancel")}</Link>
           </Button>
         </div>
       </form>

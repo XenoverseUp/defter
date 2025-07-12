@@ -51,5 +51,13 @@
     "unknown-error": "An unknown error occured.",
     "signed-up": "Signed up successfully.",
     "invalid-credentials": "Invalid email or password."
+  },
+  "location-input": {
+    "label": "Select Country...",
+    "search-country-placeholder": "Search country...",
+    "no-country-found": "No country found.",
+    "state-label": "Select State...",
+    "no-state-found": "No state found.",
+    "search-state-placeholder": "Search state..."
   }
 }

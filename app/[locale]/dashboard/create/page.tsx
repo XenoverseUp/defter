@@ -55,7 +55,7 @@ export default function Create() {
           <TabsList>
             <TabsTrigger value="form">
               <WholeWordIcon />
-              Form
+              Edit
             </TabsTrigger>
             <TabsTrigger value="preview">
               <ScanEyeIcon />

@@ -51,5 +51,13 @@
     "unknown-error": "Bilinmeyen bir hata meydana geldi.",
     "signed-up": "Başarıyla hesap oluşturuldu.",
     "invalid-credentials": "Yanlış e-posta veya şifre girildi."
+  },
+  "location-input": {
+    "label": "Ülke seçiniz...",
+    "search-country-placeholder": "Ülke ara...",
+    "no-country-found": "Hiçbir ülke bulunamadı.",
+    "state-label": "Şehir seçiniz...",
+    "search-state-placeholder": "Şehir ara...",
+    "no-state-found": "Hiçbir şehir bulunamadı."
   }
 }

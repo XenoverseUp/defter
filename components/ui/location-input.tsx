@@ -5,6 +5,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Command, CommandList, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useLocale, useTranslations } from "next-intl";
 
 import countries from "@/data/countries.json";
 import states from "@/data/states.json";
@@ -70,6 +71,9 @@ const LocationSelector = ({ disabled, onCountryChange, onStateChange }: Location
   const countriesData = countries as CountryProps[];
   const statesData = states as StateProps[];
 
+  const locale = useLocale();
+  const t = useTranslations("location-input");
+
   const availableStates = statesData.filter((state) => state.country_id === selectedCountry?.id);
 
   const handleCountrySelect = (country: CountryProps | null) => {
@@ -99,25 +103,25 @@ const LocationSelector = ({ disabled, onCountryChange, onStateChange }: Location
             {selectedCountry ? (
               <div className="flex items-center gap-2">
                 <span>{selectedCountry.emoji}</span>
-                <span>{selectedCountry.name}</span>
+                <span>{selectedCountry?.translations?.[locale] ?? selectedCountry.name}</span>
               </div>
             ) : (
-              <span>Select Country...</span>
+              <span>{t("label")}</span>
             )}
             <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="p-0">
           <Command>
-            <CommandInput placeholder="Search country..." />
+            <CommandInput placeholder={t("search-country-placeholder")} />
             <CommandList>
-              <CommandEmpty>No country found.</CommandEmpty>
+              <CommandEmpty>{t("no-country-found")}</CommandEmpty>
               <CommandGroup>
                 <ScrollArea className="h-[300px]">
                   {countriesData.map((country) => (
                     <CommandItem
                       key={country.id}
-                      value={country.name}
+                      value={country?.translations?.[locale] ?? country.name}
                       onSelect={() => {
                         handleCountrySelect(country);
                         setOpenCountryDropdown(false);
@@ -126,7 +130,7 @@ const LocationSelector = ({ disabled, onCountryChange, onStateChange }: Location
                     >
                       <div className="flex items-center gap-2">
                         <span>{country.emoji}</span>
-                        <span>{country.name}</span>
+                        <span>{country?.translations?.[locale] ?? country.name}</span>
                       </div>
                       <Check className={cn("h-4 w-4", selectedCountry?.id === country.id ? "opacity-100" : "opacity-0")} />
                     </CommandItem>
@@ -150,15 +154,15 @@ const LocationSelector = ({ disabled, onCountryChange, onStateChange }: Location
               disabled={!selectedCountry}
               className="w-full justify-between shrink"
             >
-              {selectedState ? <span>{selectedState.name}</span> : <span>Select State...</span>}
+              {selectedState ? <span>{selectedState.name}</span> : <span>{t("state-label")}</span>}
               <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="p-0">
             <Command>
-              <CommandInput placeholder="Search state..." />
+              <CommandInput placeholder={t("search-state-placeholder")} />
               <CommandList>
-                <CommandEmpty>No state found.</CommandEmpty>
+                <CommandEmpty>{t("no-state-found")}</CommandEmpty>
                 <CommandGroup>
                   <ScrollArea className="h-[300px]">
                     {availableStates.map((state) => (

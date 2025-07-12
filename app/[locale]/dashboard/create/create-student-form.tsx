@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import LocationSelector from "@/components/ui/location-input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Textarea } from "@/components/ui/textarea";
-import { PlusCircleIcon } from "lucide-react";
+import { PlusCircleIcon, ShapesIcon, SigmaIcon } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
 interface Props {
@@ -26,7 +26,7 @@ export default function CreateStudentForm({ form, onSubmit }: Props) {
               name="firstName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>First Name</FormLabel>
+                  <FormLabel>First Name *</FormLabel>
                   <FormControl>
                     <Input placeholder="Muhammed Can" type="text" {...field} />
                   </FormControl>
@@ -43,7 +43,7 @@ export default function CreateStudentForm({ form, onSubmit }: Props) {
               name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Last Name</FormLabel>
+                  <FormLabel>Last Name *</FormLabel>
                   <FormControl>
                     <Input placeholder="Durmus" type="" {...field} />
                   </FormControl>
@@ -59,25 +59,38 @@ export default function CreateStudentForm({ form, onSubmit }: Props) {
           control={form.control}
           name="grade"
           render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>Grade</FormLabel>
-              <FormControl>
-                <RadioGroup onValueChange={field.onChange} className="flex flex-col space-y-1">
-                  {[
-                    ["Middle School", "middle-school"],
-                    ["High School", "high-school"],
-                  ].map((option, index) => (
-                    <FormItem className="flex items-center space-x-3 space-y-0" key={index}>
-                      <FormControl>
-                        <RadioGroupItem value={option[1]} />
-                      </FormControl>
-                      <FormLabel className="font-normal">{option[0]}</FormLabel>
-                    </FormItem>
-                  ))}
-                </RadioGroup>
-              </FormControl>
-              <FormDescription>Select the student&apos;s grade.</FormDescription>
+            <FormItem>
+              <FormLabel>Grade *</FormLabel>
+              <FormDescription>The grade of the students determines the study programs available.</FormDescription>
               <FormMessage />
+              <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid h-14 grid-cols-2 gap-4 pt-2">
+                <FormItem>
+                  <FormLabel className="[&:has([data-state=checked])>div]:ring-2 [&:has([data-state=checked])>div]:bg-sky-50 [&:has([data-state=checked])>div]:text-sky-900">
+                    <FormControl>
+                      <RadioGroupItem value="middle-school" className="sr-only" />
+                    </FormControl>
+
+                    <Button asChild type="button" variant="outline" className="size-full ring-sky-500 justify-start pl-4!">
+                      <div>
+                        <ShapesIcon /> Middle School
+                      </div>
+                    </Button>
+                  </FormLabel>
+                </FormItem>
+                <FormItem>
+                  <FormLabel className="[&:has([data-state=checked])>div]:ring-2 [&:has([data-state=checked])>div]:bg-orange-50 [&:has([data-state=checked])>div]:text-orange-900">
+                    <FormControl>
+                      <RadioGroupItem value="high-school" className="sr-only" />
+                    </FormControl>
+                    <Button asChild type="button" variant="outline" className="size-full ring-orange-500 justify-start pl-4!">
+                      <div>
+                        <SigmaIcon />
+                        High School
+                      </div>
+                    </Button>
+                  </FormLabel>
+                </FormItem>
+              </RadioGroup>
             </FormItem>
           )}
         />
@@ -87,7 +100,7 @@ export default function CreateStudentForm({ form, onSubmit }: Props) {
           name="location"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Select A City</FormLabel>
+              <FormLabel>Location</FormLabel>
               <FormControl>
                 <LocationSelector
                   onCountryChange={(country) => {
@@ -98,7 +111,6 @@ export default function CreateStudentForm({ form, onSubmit }: Props) {
                   }}
                 />
               </FormControl>
-              <FormDescription>If your country has states, it will be appear after selecting country</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -109,11 +121,10 @@ export default function CreateStudentForm({ form, onSubmit }: Props) {
           name="phone"
           render={({ field }) => (
             <FormItem className="flex flex-col items-start">
-              <FormLabel>Phone number</FormLabel>
+              <FormLabel>Phone Number</FormLabel>
               <FormControl className="w-full">
                 <PhoneInput placeholder="555 090 7480" {...field} defaultCountry="TR" />
               </FormControl>
-              <FormDescription>Enter student&apos;s phone number.</FormDescription>
               <FormMessage />
             </FormItem>
           )}

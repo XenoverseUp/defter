@@ -34,6 +34,7 @@
       "grade": "Sınıf",
       "middle-school": "Ortaokul",
       "high-school": "Lise",
+      "no-result": "Kayıt bulunamadı.",
       "footer": "öğrenci kaydı bulundu"
     }
   },

@@ -1,12 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { GraduationCapIcon, PlusIcon } from "lucide-react";
-import { Payment } from "./columns";
+import { GraduationCapIcon, PlusCircleIcon, PlusIcon } from "lucide-react";
+
 import { DataTable } from "./data-table";
 import { getTranslations } from "next-intl/server";
+import { getStudents } from "@/lib/services/students";
+import { getSession } from "@/lib/auth";
+import { Link } from "@/i18n/navigation";
 
 export default async function Dashboard() {
-  const data = await getData();
   const t = await getTranslations("Dashboard");
+  const session = await getSession();
+  const initialStudentData = await getStudents(session!.user.id);
 
   return (
     <section className="pt-8 space-y-8">
@@ -19,44 +23,17 @@ export default async function Dashboard() {
           <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
         </div>
 
-        <Button size="sm" variant="outline">
-          <PlusIcon />
-          {t("create")}
+        <Button size="sm" variant="outline" asChild>
+          <Link href="/dashboard/create">
+            <PlusCircleIcon />
+            {t("create")}
+          </Link>
         </Button>
       </header>
 
       <div>
-        <DataTable data={data} />
+        <DataTable initialData={initialStudentData} />
       </div>
     </section>
   );
-}
-
-async function getData(): Promise<Payment[]> {
-  return [
-    {
-      id: "728ed52f",
-      grade: "high-school",
-      firstName: "Can",
-      lastName: "Durmus",
-    },
-    {
-      id: "728ed52f",
-      grade: "middle-school",
-      firstName: "Ismail Kayra",
-      lastName: "Durmus",
-    },
-    {
-      id: "728ed52f",
-      grade: "high-school",
-      firstName: "Omer",
-      lastName: "Ozbey",
-    },
-    {
-      id: "728ed52f",
-      grade: "middle-school",
-      firstName: "Digdem",
-      lastName: "Yildiz",
-    },
-  ];
 }

@@ -1,6 +1,7 @@
 import { getSession } from "@/lib/auth";
 import type { NextRequest } from "next/server";
 import type { ZodType, infer as zInfer } from "zod";
+import type { User } from "better-auth";
 
 type ValidationSchemas<PS extends ZodType<unknown> | undefined, BS extends ZodType<unknown> | undefined> = {
   params?: PS;
@@ -15,12 +16,12 @@ type ValidatedData<PS extends ZodType<unknown> | undefined, BS extends ZodType<u
 type Handler<PS extends ZodType<unknown> | undefined = undefined, BS extends ZodType<unknown> | undefined = undefined> =
   BS extends ZodType<unknown>
     ? (
-        user: any,
+        user: User,
         req: NextRequest,
         validated: { params: PS extends ZodType<unknown> ? zInfer<PS> : undefined; body: zInfer<BS> },
       ) => Promise<Response>
     : (
-        user: any,
+        user: User,
         req: NextRequest,
         validated: { params: PS extends ZodType<unknown> ? zInfer<PS> : undefined; body: undefined },
       ) => Promise<Response>;

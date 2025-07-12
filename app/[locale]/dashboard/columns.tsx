@@ -14,13 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslations } from "next-intl";
-
-export type Payment = {
-  id: string;
-  grade: "middle-school" | "high-school";
-  firstName: string;
-  lastName: string;
-};
+import { Student } from "@/lib/hooks/useStudents";
 
 export function useColumns() {
   const t = useTranslations("Dashboard.table");
@@ -80,5 +74,5 @@ export function useColumns() {
         );
       },
     },
-  ] as ColumnDef<Payment>[];
+  ] as ColumnDef<Student>[];
 }

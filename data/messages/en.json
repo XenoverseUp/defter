@@ -34,6 +34,7 @@
       "grade": "Grade",
       "middle-school": "Middle School",
       "high-school": "High School",
+      "no-result": "No results.",
       "footer": "students are present"
     }
   },

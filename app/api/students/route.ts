@@ -3,9 +3,10 @@ import { withAuthAndValidation } from "@/lib/middleware/with-auth-and-validation
 import { db } from "@/db";
 import { student } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { getStudents } from "@/lib/services/students";
 
 export const GET = withAuthAndValidation({}, async (user) => {
-  const students = await db.select().from(student).where(eq(student.userId, user.id));
+  const students = await getStudents(user.id);
   return Response.json(students);
 });
 

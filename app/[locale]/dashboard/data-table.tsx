@@ -3,16 +3,23 @@
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Payment, useColumns } from "./columns";
+import { useColumns } from "./columns";
 import { useTranslations } from "next-intl";
+import { IconInput } from "@/components/ui/input";
+import { RefreshCwIcon, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Student, useStudent } from "@/lib/hooks/useStudents";
 
 interface DataTableProps {
-  data: Payment[];
+  initialData: Student[];
 }
 
-export function DataTable({ data }: DataTableProps) {
+export function DataTable({ initialData }: DataTableProps) {
   const columns = useColumns();
   const t = useTranslations("Dashboard.table");
+
+  const { data = [], isLoading, mutate, isValidating } = useStudent({ fallbackData: initialData });
 
   const table = useReactTable({
     data,
@@ -22,6 +29,25 @@ export function DataTable({ data }: DataTableProps) {
 
   return (
     <div className="space-y-3">
+      {/* Preamble */}
+      <div className="flex items-center justify-between">
+        <div className="flex grow items-center gap-4">
+          <IconInput icon={Search} placeholder="Filter" className="max-w-sm shrink-0" />
+        </div>
+
+        <div className="flex items-center justify-end">
+          <Button size="icon" variant="ghost">
+            <RefreshCwIcon
+              onClick={() => mutate()}
+              className={cn("transition-transform", {
+                "animate-spin": isLoading || isValidating,
+              })}
+            />
+          </Button>
+        </div>
+      </div>
+
+      {/* Table */}
       <div className="rounded-lg border overflow-hidden">
         <Table>
           <TableHeader>
@@ -49,13 +75,15 @@ export function DataTable({ data }: DataTableProps) {
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  {t("no-result")}
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
+
+      {/* Footer */}
       <p className="text-center text-sm text-muted-foreground">
         {table.getRowCount()} {t("footer")}.
       </p>

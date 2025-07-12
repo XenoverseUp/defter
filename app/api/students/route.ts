@@ -2,8 +2,8 @@ import { z } from "zod";
 import { withAuthAndValidation } from "@/lib/middleware/with-auth-and-validation";
 import { db } from "@/db";
 import { student } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { getStudents } from "@/lib/services/students";
+
+import { getStudents } from "@/lib/actions/students";
 
 export const GET = withAuthAndValidation({}, async (user) => {
   const students = await getStudents(user.id);

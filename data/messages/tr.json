@@ -47,7 +47,17 @@
     },
     "form": {
       "create": "Öğrenci Oluştur",
+      "creating": "Oluşturuluyor...",
       "cancel": "Vazgeç",
+      "validation": {
+        "firstNameTooShort": "İsim en az 3 karakter olmalıdır.",
+        "firstNameTooLong": "İsim 32 karakterden uzun olamaz.",
+        "lastNameTooShort": "Soyisim en az 2 karakter olmalıdır.",
+        "lastNameTooLong": "Soyisim 32 karakterden uzun olamaz.",
+        "gradeRequired": "Lütfen bir sınıf seçin.",
+        "locationInvalid": "Lütfen geçerli bir konum girin."
+      },
+
       "firstName": {
         "label": "İsim"
       },

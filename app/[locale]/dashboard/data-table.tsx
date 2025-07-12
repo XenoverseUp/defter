@@ -40,8 +40,9 @@ export function DataTable({ initialData }: DataTableProps) {
             <RefreshCwIcon
               onClick={() => mutate()}
               className={cn("transition-transform", {
-                "animate-spin": isLoading || isValidating,
+                "animate-spin opacity-50": isLoading || isValidating,
               })}
+              strokeWidth={1.5}
             />
           </Button>
         </div>
@@ -65,13 +66,23 @@ export function DataTable({ initialData }: DataTableProps) {
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const student: Student = row.original;
+                const isOptimistic = student.id.startsWith("temp-");
+
+                return (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className={cn(isOptimistic && "opacity-50 pointer-events-none")}
+                    title={isOptimistic ? "Saving..." : undefined}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">

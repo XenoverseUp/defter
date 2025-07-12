@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { GraduationCapIcon, PlusCircleIcon, PlusIcon } from "lucide-react";
+import { GraduationCapIcon, PlusCircleIcon } from "lucide-react";
 
 import { DataTable } from "./data-table";
 import { getTranslations } from "next-intl/server";
-import { getStudents } from "@/lib/services/students";
+import { getStudents } from "@/lib/actions/students";
 import { getSession } from "@/lib/auth";
 import { Link } from "@/i18n/navigation";
 
@@ -13,7 +13,7 @@ export default async function Dashboard() {
   const initialStudentData = await getStudents(session!.user.id);
 
   return (
-    <section className="pt-8 space-y-8">
+    <section className="pt-8 pb-16 space-y-8">
       <header className="items-end justify-between flex">
         <div className="space-y-1">
           <h1 className="text-xl font-semibold flex items-center gap-2">

@@ -10,19 +10,44 @@ import { Separator } from "@/components/ui/separator";
 import CreateStudentForm from "./create-student-form";
 import { ScanEyeIcon, SignatureIcon, WholeWordIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { createStudent } from "@/lib/client-services/students";
+import { mutate } from "swr";
+import { useRouter } from "@/i18n/navigation";
 
-const formSchema = z.object({
-  firstName: z.string().min(1).min(3).max(32),
-  lastName: z.string().min(1).min(2).max(32),
-  grade: z.string(),
-  location: z.tuple([z.string().min(1), z.string().optional()]).optional(),
-  phone: z.string().optional(),
-  notes: z.string().optional(),
-});
+import { useState } from "react";
 
-export type FormSchema = z.infer<typeof formSchema>;
+export type FormSchema = z.infer<ReturnType<typeof buildFormSchema>>;
+
+function buildFormSchema(t: ReturnType<typeof useTranslations>) {
+  return z.object({
+    firstName: z
+      .string()
+      .min(3, { message: t("firstNameTooShort") })
+      .max(32, { message: t("firstNameTooLong") }),
+
+    lastName: z
+      .string()
+      .min(2, { message: t("lastNameTooShort") })
+      .max(32, { message: t("lastNameTooLong") }),
+
+    grade: z.string({ message: t("gradeRequired") }),
+
+    location: z.tuple([z.string().min(1, { message: t("locationInvalid") }), z.string().optional()]).optional(),
+
+    phone: z.string().optional(),
+    notes: z.string().optional(),
+  });
+}
 
 export default function Create() {
+  const t = useTranslations("CreateStudent");
+  const v = useTranslations("CreateStudent.form.validation");
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
+
+  const formSchema = buildFormSchema(v);
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -32,15 +57,33 @@ export default function Create() {
     },
   });
 
-  const t = useTranslations("CreateStudent");
-
-  function onSubmit(values: FormSchema) {
+  async function onSubmit(values: FormSchema) {
+    setLoading(true);
     try {
-      console.log(values);
-      toast.success("Form submittted succesfully.");
+      await mutate(
+        "/api/students",
+        async () => {
+          await createStudent(values);
+        },
+        {
+          optimisticData: (current = []) => [
+            {
+              ...values,
+              id: `temp-${Date.now()}`,
+            },
+            ...current,
+          ],
+          rollbackOnError: true,
+          revalidate: true,
+        },
+      );
+
+      toast.success("Student created successfully.");
+      router.push("/dashboard");
     } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
+      const e = error as Error;
+      toast.error(e.message ?? "Failed to submit the form.");
+      setLoading(false);
     }
   }
 
@@ -69,7 +112,7 @@ export default function Create() {
         <Separator />
       </header>
       <TabsContent value="form">
-        <CreateStudentForm {...{ form, onSubmit }} />
+        <CreateStudentForm {...{ form, onSubmit, loading }} />
       </TabsContent>
       <TabsContent value="preview">Preview amk!</TabsContent>
     </Tabs>

@@ -47,7 +47,17 @@
     },
     "form": {
       "create": "Create Student",
+      "creating": "Creating...",
       "cancel": "Cancel",
+      "validation": {
+        "firstNameTooShort": "First name must be at least 3 characters.",
+        "firstNameTooLong": "First name can't be longer than 32 characters.",
+        "lastNameTooShort": "Last name must be at least 2 characters.",
+        "lastNameTooLong": "Last name can't be longer than 32 characters.",
+        "gradeRequired": "Please select a grade.",
+        "locationInvalid": "Please enter a valid location."
+      },
+
       "firstName": {
         "label": "First Name"
       },
@@ -87,6 +97,7 @@
     "signed-up": "Signed up successfully.",
     "invalid-credentials": "Invalid email or password."
   },
+
   "location-input": {
     "label": "Select Country...",
     "search-country-placeholder": "Search country...",

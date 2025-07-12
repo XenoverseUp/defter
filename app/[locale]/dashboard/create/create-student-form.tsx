@@ -11,13 +11,15 @@ import { PlusCircleIcon, ShapesIcon, SigmaIcon } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 interface Props {
   form: UseFormReturn<FormSchema>;
   onSubmit: (values: FormSchema) => void;
+  loading: boolean;
 }
 
-export default function CreateStudentForm({ form, onSubmit }: Props) {
+export default function CreateStudentForm({ form, onSubmit, loading }: Props) {
   const t = useTranslations("CreateStudent.form");
 
   return (
@@ -150,11 +152,11 @@ export default function CreateStudentForm({ form, onSubmit }: Props) {
         />
 
         <div className="w-full flex items-center gap-2">
-          <Button type="submit">
+          <Button type="submit" disabled={loading}>
             <PlusCircleIcon />
-            {t("create")}
+            {loading ? t("creating") : t("create")}
           </Button>
-          <Button type="button" variant="link" asChild>
+          <Button type="button" variant="link" asChild className={cn({ "pointer-events-none": loading })}>
             <Link href="/dashboard">{t("cancel")}</Link>
           </Button>
         </div>

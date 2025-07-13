@@ -1,12 +1,20 @@
-import { pgTable, text, timestamp, boolean, integer, uuid, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, uuid, pgEnum } from "drizzle-orm/pg-core";
 
 export const gradeEnum = pgEnum("grade", ["middle-school", "high-school"]);
 
 export const student = pgTable("student", {
   id: uuid("id").primaryKey().defaultRandom(),
+
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   grade: gradeEnum("grade").notNull(),
+
+  country: text("country"),
+  city: text("district"),
+
+  phone: text("phone"),
+  notes: text("notes"),
+
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),

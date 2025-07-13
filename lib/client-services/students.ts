@@ -1,4 +1,13 @@
-export async function createStudent(data: any) {
+type CreateStudentInput = {
+  firstName: string;
+  lastName: string;
+  grade: "middle-school" | "high-school";
+  location?: [string, string?]; // [country, city]
+  phone?: string;
+  notes?: string;
+};
+
+export async function createStudent(data: CreateStudentInput) {
   const res = await fetch("/api/students", {
     method: "POST",
     headers: {

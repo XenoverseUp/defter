@@ -13,7 +13,6 @@ import { useTranslations } from "next-intl";
 import { createStudent } from "@/lib/client-services/students";
 import { mutate } from "swr";
 import { useRouter } from "@/i18n/navigation";
-
 import { useState } from "react";
 
 export type FormSchema = z.infer<ReturnType<typeof buildFormSchema>>;
@@ -30,7 +29,7 @@ function buildFormSchema(t: ReturnType<typeof useTranslations>) {
       .min(2, { message: t("lastNameTooShort") })
       .max(32, { message: t("lastNameTooLong") }),
 
-    grade: z.string({ message: t("gradeRequired") }),
+    grade: z.enum(["middle-school", "high-school"], { message: t("gradeRequired") }),
 
     location: z.tuple([z.string().min(1, { message: t("locationInvalid") }), z.string().optional()]).optional(),
 
@@ -60,15 +59,24 @@ export default function Create() {
   async function onSubmit(values: FormSchema) {
     setLoading(true);
     try {
+      const trimmed: FormSchema = {
+        ...values,
+        firstName: values.firstName.trim(),
+        lastName: values.lastName.trim(),
+        phone: values.phone?.trim() || undefined,
+        notes: values.notes?.trim() || undefined,
+        location: values.location?.[0].trim() ? [values.location[0].trim(), values.location[1]?.trim() || ""] : undefined,
+      };
+
       await mutate(
         "/api/students",
         async () => {
-          await createStudent(values);
+          await createStudent(trimmed);
         },
         {
           optimisticData: (current = []) => [
             {
-              ...values,
+              ...trimmed,
               id: `temp-${Date.now()}`,
             },
             ...current,

@@ -38,7 +38,7 @@ const PhoneInput: ForwardRefExoticComponent<PhoneInputProps> = forwardRef<Compon
         flagComponent={FlagComponent}
         countrySelectComponent={CountrySelect}
         inputComponent={InputComponent}
-        smartCaret={false}
+        smartCaret
         value={value || undefined}
         limitMaxLength
         labels={labels}

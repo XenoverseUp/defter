@@ -12,7 +12,7 @@ export default async function LoginPage() {
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <header className="flex justify-between w-full  gap-2">
           <Link href="/" className="flex items-center gap-2 font-medium">
-            <div className="bg-sky-500 text-primary-foreground flex size-6 items-center justify-center rounded-md">
+            <div className="bg-sky-500 shadow-xl text-primary-foreground flex size-6 items-center justify-center rounded-md">
               <Barrel className="size-4" />
             </div>
             Defter.

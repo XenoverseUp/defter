@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
-import type { Icon as LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
@@ -19,7 +19,7 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   );
 }
 
-function IconInput({ className, type, icon: Icon, ...props }: { icon: typeof LucideIcon } & React.ComponentProps<"input">) {
+function IconInput({ className, type, icon: Icon, ...props }: { icon: LucideIcon } & React.ComponentProps<"input">) {
   return (
     <div
       className={cn(
@@ -28,7 +28,6 @@ function IconInput({ className, type, icon: Icon, ...props }: { icon: typeof Luc
         className,
       )}
     >
-      {/* @ts-expect-error type mismatch */}
       <Icon size={16} />
       <input
         type={type}

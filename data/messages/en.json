@@ -28,7 +28,21 @@
     "title": "Student List",
     "subtitle": "Access and manage your students with Defter.",
     "create": "Create New",
+
     "table": {
+      "actions": {
+        "search": "Search",
+        "confirm": {
+          "title": "Confirm Delete",
+          "description": "Would you like to delete {count} students? This action is irreversible.",
+          "cancel": "Cancel",
+          "confirm": "Delete {count} students",
+          "loading": "Deleting students..."
+        },
+        "deleted-success": "Successfully deleted {count} students.",
+        "deleted-error": "Couldn't delete the students."
+      },
+
       "first-name": "First Name",
       "last-name": "Last Name",
       "grade": "Grade",

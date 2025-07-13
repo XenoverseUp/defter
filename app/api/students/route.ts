@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { student } from "@/db/schema";
 
 import { getStudents } from "@/lib/actions/students";
+import { and, eq, inArray } from "drizzle-orm";
 
 export const GET = withAuthAndValidation({}, async (user) => {
   const students = await getStudents(user.id);
@@ -45,4 +46,17 @@ export const POST = withAuthAndValidation({ body: createStudentSchema }, async (
     .returning();
 
   return Response.json(inserted[0]);
+});
+
+const deleteStudentsSchema = z.object({
+  ids: z.array(z.string().min(1)),
+});
+
+export const DELETE = withAuthAndValidation({ body: deleteStudentsSchema }, async (user, _, { body }) => {
+  const deleted = await db
+    .delete(student)
+    .where(and(eq(student.userId, user.id), inArray(student.id, body.ids)))
+    .returning({ id: student.id });
+
+  return Response.json({ success: true, deleted });
 });

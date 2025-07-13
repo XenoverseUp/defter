@@ -28,7 +28,21 @@
     "title": "Öğrenci Listesi",
     "subtitle": "Defter ile öğrencilerin programını planla.",
     "create": "Oluştur",
+
     "table": {
+      "actions": {
+        "search": "Filtrele",
+        "confirm": {
+          "title": "Silmeyi Onayla",
+          "description": "{count} öğrenciyi tamamen silmek istiyor musun? Bunu geri alamazsın.",
+          "cancel": "Vazgeç",
+          "confirm": "{count} öğrenciyi sil",
+          "loading": "Siliniyor..."
+        },
+        "deleted-success": "{count} öğrenci başarıyla silindi.",
+        "deleted-error": "Bir hata yüzüünden öğrenciler silinemedi."
+      },
+
       "first-name": "İsim",
       "last-name": "Soyisim",
       "grade": "Sınıf",

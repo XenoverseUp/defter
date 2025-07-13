@@ -1,11 +1,9 @@
+import { FormSchema } from "@/app/[locale]/dashboard/create/page";
 import useSWR from "swr";
 
 export type Student = {
   id: string;
-  grade: "middle-school" | "high-school";
-  firstName: string;
-  lastName: string;
-};
+} & FormSchema;
 
 const fetcher = (url: string): Promise<Student[]> => fetch(url).then((res) => res.json());
 

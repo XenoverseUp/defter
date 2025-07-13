@@ -6,9 +6,8 @@ import { student } from "@/db/schema";
 import { getStudents } from "@/lib/actions/students";
 import { and, eq, inArray } from "drizzle-orm";
 
-export const GET = withAuthAndValidation({}, async (user) => {
-  const students = await getStudents(user.id);
-  return Response.json(students);
+const deleteStudentsSchema = z.object({
+  ids: z.array(z.string().min(1)),
 });
 
 const createStudentSchema = z.object({
@@ -23,6 +22,11 @@ const createStudentSchema = z.object({
     .optional(),
   phone: z.string().optional(),
   notes: z.string().optional(),
+});
+
+export const GET = withAuthAndValidation({}, async (user) => {
+  const students = await getStudents(user.id);
+  return Response.json(students);
 });
 
 export const POST = withAuthAndValidation({ body: createStudentSchema }, async (user, _, { body }) => {
@@ -46,10 +50,6 @@ export const POST = withAuthAndValidation({ body: createStudentSchema }, async (
     .returning();
 
   return Response.json(inserted[0]);
-});
-
-const deleteStudentsSchema = z.object({
-  ids: z.array(z.string().min(1)),
 });
 
 export const DELETE = withAuthAndValidation({ body: deleteStudentsSchema }, async (user, _, { body }) => {

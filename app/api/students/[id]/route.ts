@@ -35,6 +35,10 @@ export const PATCH = withAuthAndValidation({ params: paramsSchema, body: patchBo
 });
 
 export const DELETE = withAuthAndValidation({ params: paramsSchema }, async (user, req, { params }) => {
-  await db.delete(student).where(and(eq(student.id, params.id), eq(student.userId, user.id)));
-  return new Response(null, { status: 204 });
+  const deleted = await db
+    .delete(student)
+    .where(and(eq(student.id, params.id), eq(student.userId, user.id)))
+    .returning({ id: student.id });
+
+  return Response.json({ success: true, deleted });
 });

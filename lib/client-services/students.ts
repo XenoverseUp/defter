@@ -39,3 +39,15 @@ export const deleteStudents = async (ids: string[]) => {
 
   return res.json();
 };
+
+export const deleteStudent = async (id: string) => {
+  const res = await fetch(`/api/students/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to delete students");
+  }
+
+  return res.json();
+};

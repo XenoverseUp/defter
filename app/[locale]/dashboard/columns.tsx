@@ -1,20 +1,17 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { EllipsisVerticalIcon, InfoIcon, MoreHorizontal, Trash2Icon, UserRoundIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslations } from "next-intl";
 import { Student } from "@/lib/hooks/useStudents";
+import { Link } from "@/i18n/navigation";
+import { deleteStudent } from "@/lib/client-services/students";
+import { mutate } from "swr";
+import { toast } from "sonner";
 
 export function useColumns() {
   const t = useTranslations("Dashboard.table");
@@ -51,7 +48,7 @@ export function useColumns() {
     {
       id: "actions",
       cell: ({ row }) => {
-        const payment = row.original;
+        const student = row.original;
 
         return (
           <div className="flex justify-end">
@@ -59,15 +56,31 @@ export function useColumns() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
                   <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
+                  <EllipsisVerticalIcon className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>Copy payment ID</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>View customer</DropdownMenuItem>
-                <DropdownMenuItem>View payment details</DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={`/dashboard/student/${student.id}`}>
+                    <UserRoundIcon />
+                    Visit Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={async () => {
+                    try {
+                      await deleteStudent(student.id);
+                      mutate("/api/students");
+                      toast.success(t("actions.deleted-success", { count: 1 }));
+                    } catch {
+                      toast.error(t("actions.deleted-error"));
+                    }
+                  }}
+                >
+                  <Trash2Icon />
+                  Delete
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

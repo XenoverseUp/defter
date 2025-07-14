@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { getAuth } from "../middleware/getAuth";
-import { getStudentResources, getStudents } from "@/lib/actions/students";
+import { getStudents } from "@/lib/actions/students";
 import { zValidator } from "@hono/zod-validator";
 import { resource, student } from "@/db/schema";
 import { and, eq, inArray } from "drizzle-orm";
@@ -8,6 +8,7 @@ import { db } from "@/db";
 import { createStudentSchema, deleteStudentsSchema, patchStudentSchema, studentIdParamSchema } from "../validator/student";
 import { createResourceSchema } from "../validator/resource";
 import { requireOwnsStudent } from "../middleware/requireOwnsStudent";
+import { getStudentResources } from "@/lib/actions/resources";
 
 export const studentRouter = new Hono()
   .use(getAuth)

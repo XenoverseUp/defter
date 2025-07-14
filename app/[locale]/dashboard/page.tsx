@@ -32,6 +32,7 @@ export default async function Dashboard() {
       </header>
 
       <div>
+        {/* @ts-expect-error date serialaization */}
         <DataTable initialData={initialStudentData} />
       </div>
     </section>

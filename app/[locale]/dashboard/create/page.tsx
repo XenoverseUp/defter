@@ -9,10 +9,11 @@ import { Separator } from "@/components/ui/separator";
 import CreateStudentForm from "./create-student-form";
 import { SignatureIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { createStudent } from "@/lib/client-services/students";
-import { mutate } from "swr";
+import { createStudent, StudentData } from "@/lib/client-services/students";
+
 import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
+import { mutateStudents } from "@/lib/hooks/useStudents";
 
 export type FormSchema = z.infer<ReturnType<typeof buildFormSchema>>;
 
@@ -58,30 +59,29 @@ export default function Create() {
   async function onSubmit(values: FormSchema) {
     setLoading(true);
     try {
-      const trimmed: FormSchema = {
-        ...values,
+      const optimisticStudent: StudentData = {
+        id: `temp-${Date.now()}`,
         firstName: values.firstName.trim(),
         lastName: values.lastName.trim(),
-        phone: values.phone?.trim() || undefined,
-        notes: values.notes?.trim() || undefined,
-        location: values.location?.[0].trim() ? [values.location[0].trim(), values.location[1]?.trim() || ""] : undefined,
+        grade: values.grade,
+        country: values.location?.[0]?.trim() || null,
+        city: values.location?.[1]?.trim() || null,
+        phone: values.phone?.trim() ?? null,
+        notes: values.notes ?? null,
+        userId: `temp-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
-      await mutate(
-        "/api/students",
-        async () => {
-          await createStudent(trimmed);
+      await mutateStudents(
+        async (current = []) => {
+          const created = await createStudent(optimisticStudent);
+          return [created, ...current];
         },
         {
-          optimisticData: (current = []) => [
-            {
-              ...trimmed,
-              id: `temp-${Date.now()}`,
-            },
-            ...current,
-          ],
+          optimisticData: (current = []) => [optimisticStudent, ...current],
           rollbackOnError: true,
-          revalidate: true,
+          revalidate: false,
         },
       );
 

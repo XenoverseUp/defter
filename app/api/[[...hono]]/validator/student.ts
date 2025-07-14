@@ -13,14 +13,10 @@ export const createStudentSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   grade: z.enum(gradeEnum.enumValues),
-  location: z
-    .tuple([
-      z.string().min(1), // country
-      z.string().optional(), // city
-    ])
-    .optional(),
-  phone: z.string().optional(),
-  notes: z.string().optional(),
+  country: z.string().optional().nullable(),
+  city: z.string().optional().nullable(),
+  phone: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
 });
 
 export const patchStudentSchema = z.object({

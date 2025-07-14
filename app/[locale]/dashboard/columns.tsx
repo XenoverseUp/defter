@@ -7,11 +7,11 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslations } from "next-intl";
-import { Student } from "@/lib/hooks/useStudents";
 import { Link } from "@/i18n/navigation";
-import { deleteStudent } from "@/lib/client-services/students";
-import { mutate } from "swr";
+import { deleteStudent, StudentData } from "@/lib/client-services/students";
+
 import { toast } from "sonner";
+import { mutateStudents } from "@/lib/hooks/useStudents";
 
 export function useColumns() {
   const t = useTranslations("Dashboard.table");
@@ -71,7 +71,7 @@ export function useColumns() {
                   onClick={async () => {
                     try {
                       await deleteStudent(student.id);
-                      mutate("/api/students");
+                      mutateStudents();
                       toast.success(t("actions.deleted-success", { count: 1 }));
                     } catch {
                       toast.error(t("actions.deleted-error"));
@@ -87,5 +87,5 @@ export function useColumns() {
         );
       },
     },
-  ] as ColumnDef<Student>[];
+  ] as ColumnDef<StudentData>[];
 }

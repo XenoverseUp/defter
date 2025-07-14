@@ -1,18 +1,27 @@
-import { FormSchema } from "@/app/[locale]/dashboard/create/page";
-import useSWR from "swr";
+import type { MutatorOptions, MutatorCallback } from "swr";
+import useSWR, { mutate } from "swr";
 
-export type Student = {
-  id: string;
-} & FormSchema;
+import { getStudents, type StudentData } from "../client-services/students";
 
-const fetcher = (url: string): Promise<Student[]> => fetch(url).then((res) => res.json());
+const KEY = "students" as const;
 
-export function useStudent({ fallbackData }: { fallbackData: Student[] }) {
-  const swr = useSWR("/api/students", fetcher, {
+const fetcher = async (): Promise<StudentData[]> => {
+  return await getStudents();
+};
+
+export function useStudents({ fallbackData }: { fallbackData: StudentData[] }) {
+  const swr = useSWR(KEY, fetcher, {
     fallbackData,
     revalidateOnMount: true,
     keepPreviousData: true,
   });
 
   return swr;
+}
+
+export function mutateStudents(
+  data?: StudentData[] | Promise<StudentData[]> | MutatorCallback<StudentData[]>,
+  opts?: MutatorOptions<StudentData[]>,
+) {
+  return mutate<StudentData[]>(KEY, data, opts);
 }

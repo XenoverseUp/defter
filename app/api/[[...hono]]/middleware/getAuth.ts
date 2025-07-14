@@ -1,6 +1,6 @@
 import { getSession } from "@/lib/auth";
 import { User } from "better-auth";
-import { MiddlewareHandler } from "hono";
+
 import { createMiddleware } from "hono/factory";
 
 type Env = {

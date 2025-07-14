@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { getAuth } from "../middleware/getAuth";
 
-const resourceRouter = new Hono().use(getAuth);
-
-resourceRouter.get("/");
+export const resourceRouter = new Hono().use(getAuth).get("/", async (c) => {
+  c.json("");
+});
 
 export default resourceRouter;

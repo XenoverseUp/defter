@@ -1,14 +1,17 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
-import studentRouter from "./router/student";
+import { studentRouter } from "./router/student";
+import { resourceRouter } from "./router/resource";
 
-const app = new Hono().basePath("api");
+const app = new Hono()
+  .basePath("api")
+  .route("/students", studentRouter)
+  .route("/resources", resourceRouter)
+  .all("*", (c) => {
+    return c.notFound();
+  });
 
-app.route("/students", studentRouter);
-
-app.all("*", (c) => {
-  return c.notFound();
-});
+export type AppType = typeof app;
 
 export const GET = handle(app);
 export const POST = handle(app);

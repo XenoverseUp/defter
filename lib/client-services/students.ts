@@ -1,53 +1,46 @@
-type CreateStudentInput = {
-  firstName: string;
-  lastName: string;
-  grade: "middle-school" | "high-school";
-  location?: [string, string?]; // [country, city]
-  phone?: string;
-  notes?: string;
-};
+import type { ClientResponse } from "hono/client";
+import { api } from "./hono-client";
 
-export async function createStudent(data: CreateStudentInput) {
-  const res = await fetch("/api/students", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
+type ExtractData<T> = T extends ClientResponse<infer D, any, any> ? D : never;
+
+export type StudentData = ExtractData<Awaited<ReturnType<typeof api.students.$get>>>[number];
+
+export async function getStudents() {
+  const res = await api.students.$get();
+
+  if (!res.ok) throw new Error("Failed to get students");
+
+  return res.json();
+}
+
+export async function createStudent(data: Omit<StudentData, "id" | "userId" | "createdAt" | "updatedAt">) {
+  const res = await api.students.$post({
+    json: data,
   });
 
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || "Failed to create student");
-  }
+  if (!res.ok) throw new Error("Failed to create student");
 
   return res.json();
 }
 
 export const deleteStudents = async (ids: string[]) => {
-  const res = await fetch("/api/students", {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ ids }),
+  const res = await api.students.$delete({
+    json: { ids },
   });
 
-  if (!res.ok) {
-    throw new Error("Failed to delete students");
-  }
+  if (!res.ok) throw new Error("Failed to delete students");
 
   return res.json();
 };
 
 export const deleteStudent = async (id: string) => {
-  const res = await fetch(`/api/students/${id}`, {
-    method: "DELETE",
+  const res = await api.students[":id"].$delete({
+    param: {
+      id,
+    },
   });
 
-  if (!res.ok) {
-    throw new Error("Failed to delete students");
-  }
+  if (!res.ok) throw new Error("Failed to delete students");
 
   return res.json();
 };

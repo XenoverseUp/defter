@@ -20,14 +20,14 @@ import { IconInput } from "@/components/ui/input";
 import { LoaderIcon, RefreshCwIcon, Search, Trash2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Student, useStudent } from "@/lib/hooks/useStudents";
+import { mutateStudents, useStudents } from "@/lib/hooks/useStudents";
 import { If } from "@/components/ui/if";
-import { deleteStudents } from "@/lib/client-services/students";
+import { deleteStudents, StudentData } from "@/lib/client-services/students";
 import { toast } from "sonner";
 import { useState } from "react";
 
 interface DataTableProps {
-  initialData: Student[];
+  initialData: StudentData[];
 }
 
 export function DataTable({ initialData }: DataTableProps) {
@@ -37,7 +37,7 @@ export function DataTable({ initialData }: DataTableProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const { data = [], isLoading, mutate, isValidating } = useStudent({ fallbackData: initialData });
+  const { data = [], isLoading, isValidating } = useStudents({ fallbackData: initialData });
 
   const table = useReactTable({
     data,
@@ -88,7 +88,7 @@ export function DataTable({ initialData }: DataTableProps) {
                           setDeleteLoading(true);
                           const ids = selectedRows.map((row) => row.original.id);
                           await deleteStudents(ids);
-                          mutate();
+                          mutateStudents();
                           toast.success(t("actions.deleted-success", { count: ids.length }));
                           setDeleteDialogOpen(false);
                         } catch {
@@ -121,7 +121,7 @@ export function DataTable({ initialData }: DataTableProps) {
           />
           <Button size="sm" variant="ghost">
             <RefreshCwIcon
-              onClick={() => mutate()}
+              onClick={() => mutateStudents()}
               className={cn("transition-transform", {
                 "animate-spin opacity-50": isLoading || isValidating,
               })}
@@ -151,7 +151,7 @@ export function DataTable({ initialData }: DataTableProps) {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => {
-                const student: Student = row.original;
+                const student: StudentData = row.original;
                 const isOptimistic = student.id.startsWith("temp-");
 
                 return (

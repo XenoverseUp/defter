@@ -24,7 +24,7 @@ export const subjectEnum = pgEnum("subject", [
   "english",
 ]);
 
-export const studentResource = pgTable(
+export const resource = pgTable(
   "student_resource",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -142,7 +142,7 @@ export const schema = {
   session,
   account,
   verification,
-  studentResource,
+  resource,
   gradeEnum,
   subjectEnum,
 };

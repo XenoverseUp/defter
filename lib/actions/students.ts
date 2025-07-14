@@ -1,8 +1,9 @@
 import { db } from "@/db";
-import { student } from "@/db/schema";
+import { student, resource } from "@/db/schema";
+import { UUID } from "crypto";
 import { and, desc, eq } from "drizzle-orm";
 
-export async function getStudents(userId: string) {
+export async function getStudents(userId: UUID | string) {
   const students = await db.select().from(student).where(eq(student.userId, userId)).orderBy(desc(student.createdAt));
   return students;
 }
@@ -15,4 +16,10 @@ export async function getStudentProfile(studentId: string, userId: string) {
     .limit(1);
 
   return result[0] ?? null;
+}
+
+export async function getStudentResources(studentId: UUID | string) {
+  const resources = await db.select().from(resource).where(eq(resource.studentId, studentId)).orderBy(desc(resource.createdAt));
+
+  return resources;
 }

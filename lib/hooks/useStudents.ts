@@ -1,16 +1,12 @@
 import type { MutatorOptions, MutatorCallback } from "swr";
 import useSWR, { mutate } from "swr";
 
-import { getStudents, type StudentData } from "../client-services/students";
+import { getStudents, type StudentData } from "@/lib/client-services/students";
 
 const KEY = "students" as const;
 
-const fetcher = async (): Promise<StudentData[]> => {
-  return await getStudents();
-};
-
 export function useStudents({ fallbackData }: { fallbackData: StudentData[] }) {
-  const swr = useSWR(KEY, fetcher, {
+  const swr = useSWR(KEY, () => getStudents(), {
     fallbackData,
     revalidateOnMount: true,
     keepPreviousData: true,

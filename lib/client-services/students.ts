@@ -1,9 +1,7 @@
-import type { ClientResponse } from "hono/client";
 import { api } from "./hono-client";
+import type { InferResponseType } from "hono";
 
-type ExtractData<T> = T extends ClientResponse<infer D, any, any> ? D : never;
-
-export type StudentData = ExtractData<Awaited<ReturnType<typeof api.students.$get>>>[number];
+export type StudentData = InferResponseType<typeof api.students.$get>[number];
 
 export async function getStudents() {
   const res = await api.students.$get();
@@ -14,9 +12,7 @@ export async function getStudents() {
 }
 
 export async function createStudent(data: Omit<StudentData, "id" | "userId" | "createdAt" | "updatedAt">) {
-  const res = await api.students.$post({
-    json: data,
-  });
+  const res = await api.students.$post({ json: data });
 
   if (!res.ok) throw new Error("Failed to create student");
 
@@ -24,9 +20,7 @@ export async function createStudent(data: Omit<StudentData, "id" | "userId" | "c
 }
 
 export const deleteStudents = async (ids: string[]) => {
-  const res = await api.students.$delete({
-    json: { ids },
-  });
+  const res = await api.students.$delete({ json: { ids } });
 
   if (!res.ok) throw new Error("Failed to delete students");
 
@@ -34,11 +28,7 @@ export const deleteStudents = async (ids: string[]) => {
 };
 
 export const deleteStudent = async (id: string) => {
-  const res = await api.students[":id"].$delete({
-    param: {
-      id,
-    },
-  });
+  const res = await api.students[":id"].$delete({ param: { id } });
 
   if (!res.ok) throw new Error("Failed to delete students");
 

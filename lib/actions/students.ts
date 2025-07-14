@@ -17,9 +17,3 @@ export async function getStudentProfile(studentId: string, userId: string) {
 
   return result[0] ?? null;
 }
-
-export async function getStudentResources(studentId: UUID | string) {
-  const resources = await db.select().from(resource).where(eq(resource.studentId, studentId)).orderBy(desc(resource.createdAt));
-
-  return resources;
-}

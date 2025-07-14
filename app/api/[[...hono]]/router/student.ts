@@ -11,11 +11,13 @@ import { requireOwnsStudent } from "../middleware/requireOwnsStudent";
 
 export const studentRouter = new Hono()
   .use(getAuth)
+
   .get("/", async (c) => {
     const { user } = c.var;
     const students = await getStudents(user.id);
     return c.json(students);
   })
+
   .post("/", zValidator("json", createStudentSchema), async (c) => {
     const user = c.var.user;
     const { firstName, lastName, grade, city, country, phone, notes } = c.req.valid("json");
@@ -38,6 +40,7 @@ export const studentRouter = new Hono()
 
     return c.json(inserted);
   })
+
   .delete("/", zValidator("json", deleteStudentsSchema), async (c) => {
     const user = c.var.user;
     const { ids } = c.req.valid("json");
@@ -49,6 +52,7 @@ export const studentRouter = new Hono()
 
     return c.json({ success: true, deleted });
   })
+
   .delete("/:id", zValidator("param", studentIdParamSchema), requireOwnsStudent, async (c) => {
     const user = c.var.user;
     const params = c.req.valid("param");
@@ -64,6 +68,7 @@ export const studentRouter = new Hono()
 
     return c.json({ success: true, deleted });
   })
+
   .patch(
     "/:id",
     zValidator("param", studentIdParamSchema),
@@ -94,12 +99,14 @@ export const studentRouter = new Hono()
       return c.json({ success: true, data: updated[0] });
     },
   )
+
   .get("/:id/resources", zValidator("param", studentIdParamSchema), requireOwnsStudent, async (c) => {
     const student = c.var.student;
 
     const resources = await getStudentResources(student.id);
     return c.json(resources);
   })
+
   .post(
     "/:id/resources",
     zValidator("param", studentIdParamSchema),

@@ -1,10 +1,11 @@
 import { z } from "zod";
 import { withAuthAndValidation } from "@/lib/middleware/with-auth-and-validation";
 import { db } from "@/db";
-import { student } from "@/db/schema";
+import { gradeEnum, student } from "@/db/schema";
 
 import { getStudents } from "@/lib/actions/students";
 import { and, eq, inArray } from "drizzle-orm";
+import { withAuth } from "@/lib/middleware/with-auth";
 
 const deleteStudentsSchema = z.object({
   ids: z.array(z.string().min(1)),
@@ -13,7 +14,7 @@ const deleteStudentsSchema = z.object({
 const createStudentSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  grade: z.enum(["middle-school", "high-school"]),
+  grade: z.enum(gradeEnum.enumValues),
   location: z
     .tuple([
       z.string().min(1), // country
@@ -24,7 +25,7 @@ const createStudentSchema = z.object({
   notes: z.string().optional(),
 });
 
-export const GET = withAuthAndValidation({}, async (user) => {
+export const GET = withAuth(async (user) => {
   const students = await getStudents(user.id);
   return Response.json(students);
 });

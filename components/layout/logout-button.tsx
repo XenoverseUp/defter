@@ -6,6 +6,7 @@ import { Loader, LogOut } from "lucide-react";
 import { Button } from "../ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export function LogoutButton() {
   const router = useRouter();
@@ -15,8 +16,10 @@ export function LogoutButton() {
     setLoading(true);
     try {
       await authClient.signOut();
+      toast.success("Logged out successfully.");
       router.push("/");
-    } catch {
+      router.refresh();
+    } finally {
       setLoading(false);
     }
   }

@@ -1,6 +1,6 @@
 import { Link, redirect } from "@/i18n/navigation";
 import { getSession } from "@/lib/auth";
-import { getStudentProfile } from "@/lib/actions/students";
+
 import StudentProfile from "./student-profile";
 import NavTab from "./nav-tab";
 import { ReactNode } from "react";
@@ -8,9 +8,10 @@ import { UUID } from "crypto";
 import { getLocale } from "next-intl/server";
 import { ChevronLeftIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getStudentProfile } from "@/lib/actions/students";
 
-export default async function StudentLayout({ children, params }: { children: ReactNode; params: { id: UUID } }) {
-  const { id } = params;
+export default async function StudentLayout({ children, params }: { children: ReactNode; params: Promise<{ id: UUID }> }) {
+  const { id } = await params;
 
   const session = await getSession();
   const locale = await getLocale();

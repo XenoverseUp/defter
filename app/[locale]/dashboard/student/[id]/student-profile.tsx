@@ -3,11 +3,14 @@
 import { Badge } from "@/components/ui/badge";
 import { BooringAvatars } from "@/components/ui/booring-avatars";
 import { Button } from "@/components/ui/button";
+
 import { If } from "@/components/ui/if";
 import { getStudentProfile } from "@/lib/actions/students";
 import { cn } from "@/lib/utils";
 
 import { ShapesIcon, SigmaIcon, UserRoundPenIcon } from "lucide-react";
+
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 interface Props {
   profile: Awaited<ReturnType<typeof getStudentProfile>>;
@@ -15,17 +18,17 @@ interface Props {
 
 export default function StudentProfile({ profile }: Props) {
   return (
-    <header className="flex gap-6 py-6">
+    <header className="flex gap-6 py-6 px-4">
       <BooringAvatars
         colors={
           profile.grade === "middle-school"
-            ? ["#78B9B5", "#0F828C", "#065084", "#320A6B", "#093FB4", "#0B1D51", "#4300FF", "#00CAFF"]
+            ? ["#78B9B5", "#0F828C", "#065084", "#320A6B", "#0B1D51", "#4300FF", "#00CAFF"]
             : ["#7B4019", "#FF7D29", "#FFBF78", "#FFEEA9"]
         }
         variant="beam"
         square
         name={profile.firstName}
-        className="shrink-0 size-20 rounded-lg overflow-hidden shadow-xl"
+        className="shrink-0 size-20 rounded-full overflow-hidden shadow-xl border"
       />
 
       <div className="space-y-1.5 my-auto">
@@ -49,10 +52,22 @@ export default function StudentProfile({ profile }: Props) {
         </div>
       </div>
 
-      {/* <Button variant="outline" size="sm" className="ml-auto my-auto">
-        <UserRoundPenIcon />
-        Edit Profile
-      </Button> */}
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant="outline" size="sm" className="ml-auto my-auto">
+            <UserRoundPenIcon />
+            Edit Profile
+          </Button>
+        </SheetTrigger>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Edit Student Profile</SheetTitle>
+            <SheetDescription>
+              This action cannot be undone. This will permanently delete your account and remove your data from our servers.
+            </SheetDescription>
+          </SheetHeader>
+        </SheetContent>
+      </Sheet>
     </header>
   );
 }

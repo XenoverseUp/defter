@@ -26,18 +26,22 @@ interface Props {
   id: UUID;
 }
 
-export default function NavTab({ id, locale }: Props) {
-  const rawPathname = usePathname();
-  const pathname = stripLocale(rawPathname);
-
+const getTabs = (id: UUID): Tab[] => {
   const basePath = `/dashboard/student/${id}`;
 
-  const tabs: Tab[] = [
+  return [
     { label: "Overview", href: `${basePath}`, icon: BlocksIcon },
     { label: "Resources", href: `${basePath}/resources`, icon: NotebookIcon },
     { label: "Weekly Assignments", href: `${basePath}/weekly-assignments`, icon: ChartGanttIcon },
     { label: "Bio", href: `${basePath}/bio`, icon: UserRoundCogIcon },
   ];
+};
+
+export default function NavTab({ id, locale }: Props) {
+  const rawPathname = usePathname();
+  const pathname = stripLocale(rawPathname);
+
+  const tabs = getTabs(id);
 
   return (
     <div className="flex gap-5 border-b mb-6 pl-4 pr-2">

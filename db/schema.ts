@@ -1,4 +1,58 @@
-import { pgTable, text, timestamp, boolean, uuid, pgEnum } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { pgTable, text, timestamp, boolean, uuid, pgEnum, integer, check } from "drizzle-orm/pg-core";
+
+export const subjectEnum = pgEnum("subject", [
+  // Middle School Only
+  "social-studies",
+  "science",
+
+  // High School Only
+  "philosophy",
+  "logic",
+  "physics",
+  "chemistry",
+  "biology",
+  "history",
+  "geography",
+  "german",
+  "french",
+
+  // Shared
+  "religion",
+  "turkish",
+  "math",
+  "english",
+]);
+
+export const studentResource = pgTable(
+  "student_resource",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+
+    studentId: uuid("student_id")
+      .notNull()
+      .references(() => student.id, { onDelete: "cascade" }),
+
+    title: text("title").notNull(),
+    subject: subjectEnum("subject").notNull(),
+    press: text("press").notNull(),
+
+    totalQuestions: integer("total_questions").notNull(),
+    questionsRemaining: integer("questions_remaining").notNull(),
+
+    createdAt: timestamp("created_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+    updatedAt: timestamp("updated_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+  },
+  ({ totalQuestions, questionsRemaining }) => [
+    check("total_questions_non_negative", sql`${totalQuestions} > 0`),
+    check("questions_remaining_non_negative", sql`${questionsRemaining} >= 0`),
+    check("questions_remaining_not_more_than_total", sql`${questionsRemaining} <= ${totalQuestions}`),
+  ],
+);
 
 export const gradeEnum = pgEnum("grade", ["middle-school", "high-school"]);
 
@@ -88,5 +142,7 @@ export const schema = {
   session,
   account,
   verification,
+  studentResource,
   gradeEnum,
+  subjectEnum,
 };

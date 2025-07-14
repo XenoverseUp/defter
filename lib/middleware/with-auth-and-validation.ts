@@ -8,11 +8,6 @@ type ValidationSchemas<PS extends ZodType<unknown> | undefined, BS extends ZodTy
   body?: BS;
 };
 
-type ValidatedData<PS extends ZodType<unknown> | undefined, BS extends ZodType<unknown> | undefined> = {
-  params: PS extends ZodType<unknown> ? zInfer<PS> : undefined;
-  body: BS extends ZodType<unknown> ? zInfer<BS> : undefined;
-};
-
 type Handler<PS extends ZodType<unknown> | undefined = undefined, BS extends ZodType<unknown> | undefined = undefined> =
   BS extends ZodType<unknown>
     ? (
@@ -37,6 +32,7 @@ export function withAuthAndValidation<
     }
     const user = session.user;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let validatedParams: any = context.params;
     if (schemas.params) {
       const paramsResult = schemas.params.safeParse(context.params);
@@ -55,6 +51,7 @@ export function withAuthAndValidation<
       validatedParams = paramsResult.data;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let validatedBody: any = undefined;
     if (schemas.body) {
       let bodyJson: unknown;
@@ -83,7 +80,7 @@ export function withAuthAndValidation<
       validatedBody = bodyResult.data;
     }
 
-    // @ts-ignore
+    // @ts-expect-error ts error
     if (schemas.body) return handler(user, req, { params: validatedParams, body: validatedBody as zInfer<BS> });
     else return handler(user, req, { params: validatedParams, body: undefined });
   };

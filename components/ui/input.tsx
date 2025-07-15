@@ -2,6 +2,8 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
+import { MinusIcon, PlusIcon } from "lucide-react";
+import { Button } from "./button";
 
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
@@ -42,4 +44,97 @@ function IconInput({ className, type, icon: Icon, ...props }: { icon: LucideIcon
   );
 }
 
-export { Input, IconInput };
+interface NumberInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  min?: number;
+  max?: number;
+  step?: number;
+  onValueChange?: (value: number) => void;
+}
+
+const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
+  ({ className, min = 0, max = Infinity, step = 1, value: controlledValue, onChange, onValueChange, ...props }, ref) => {
+    const isControlled = controlledValue !== undefined;
+    const [internalValue, setInternalValue] = React.useState<number>(Number(controlledValue) || 0);
+    const value = isControlled ? Number(controlledValue) : internalValue;
+
+    const inputRef = React.useRef<HTMLInputElement | null>(null);
+
+    const setInputRef = (el: HTMLInputElement | null) => {
+      inputRef.current = el;
+      if (typeof ref === "function") {
+        ref(el);
+      } else if (ref) {
+        (ref as React.RefObject<HTMLInputElement | null>).current = el;
+      }
+    };
+
+    const updateValue = (next: number) => {
+      if (next < min || next > max) return;
+
+      if (!isControlled) setInternalValue(next);
+
+      onValueChange?.(next);
+
+      if (onChange && inputRef.current) {
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+        nativeInputValueSetter?.call(inputRef.current, String(next));
+
+        const event = new Event("input", { bubbles: true });
+        inputRef.current.dispatchEvent(event);
+      }
+    };
+
+    return (
+      <div
+        className={cn(
+          "inline-flex h-9 w-full items-center overflow-hidden rounded-md border transition border-input shadow-xs",
+          "disabled:opacity-50",
+          "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
+          "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+          className,
+        )}
+      >
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-full rounded-none border-r"
+          onClick={() => updateValue(value - step)}
+          disabled={value <= min}
+        >
+          <MinusIcon size={16} />
+        </Button>
+
+        <Input
+          ref={setInputRef}
+          type="number"
+          inputMode="numeric"
+          className="h-full w-full outline-none ring-0! border-0 px-3 text-center tabular-nums"
+          value={value}
+          onChange={(e) => {
+            const next = Number(e.target.value);
+            if (!Number.isNaN(next)) updateValue(next);
+          }}
+          onClick={() => inputRef.current?.select()}
+          onFocus={() => inputRef.current?.select()}
+          {...props}
+        />
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-full rounded-none border-l"
+          onClick={() => updateValue(value + step)}
+          disabled={value >= max}
+        >
+          <PlusIcon size={16} />
+        </Button>
+      </div>
+    );
+  },
+);
+
+NumberInput.displayName = "NumberInput";
+
+export { Input, IconInput, NumberInput };

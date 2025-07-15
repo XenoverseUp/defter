@@ -16,6 +16,7 @@ export function LogoutButton() {
     setLoading(true);
     try {
       await authClient.signOut();
+
       toast.success("Logged out successfully.");
       router.push("/");
       router.refresh();

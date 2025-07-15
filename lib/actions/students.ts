@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { student, resource } from "@/db/schema";
+import { student } from "@/db/schema";
 import { UUID } from "crypto";
 import { and, desc, eq } from "drizzle-orm";
 

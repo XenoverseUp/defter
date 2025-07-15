@@ -7,18 +7,14 @@ export const subjectEnum = pgEnum("subject", [
   "science",
 
   // High School Only
-  "philosophy",
-  "logic",
   "physics",
   "chemistry",
   "biology",
   "history",
   "geography",
-  "german",
-  "french",
+  "geometry",
 
   // Shared
-  "religion",
   "turkish",
   "math",
   "english",

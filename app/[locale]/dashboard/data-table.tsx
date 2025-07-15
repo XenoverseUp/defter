@@ -93,7 +93,6 @@ export function DataTable({ initialData }: DataTableProps) {
                           setDeleteDialogOpen(false);
                         } catch {
                           toast.error(t("actions.deleted-error"));
-                        } finally {
                           setDeleteLoading(false);
                         }
                       }}

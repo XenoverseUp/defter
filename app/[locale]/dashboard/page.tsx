@@ -4,13 +4,16 @@ import { GraduationCapIcon, PlusCircleIcon } from "lucide-react";
 import { DataTable } from "./data-table";
 import { getTranslations } from "next-intl/server";
 import { getStudents } from "@/lib/actions/students";
-import { getSession } from "@/lib/auth";
+import { getUserFromCookies } from "@/lib/auth";
 import { Link } from "@/i18n/navigation";
 
 export default async function Dashboard() {
   const t = await getTranslations("Dashboard");
-  const session = await getSession();
-  const initialStudentData = await getStudents(session!.user.id);
+  const user = await getUserFromCookies();
+
+  if (!user?.id) return;
+
+  const initialStudentData = await getStudents(user.id);
 
   return (
     <section className="pt-8 pb-16 space-y-8">

@@ -1,8 +1,7 @@
 import { createMiddleware } from "hono/factory";
-import { z } from "zod";
 
 import { student } from "@/db/schema";
-import { eq } from "drizzle-orm";
+
 import { db } from "@/db";
 import { User } from "better-auth";
 import { studentIdParamSchema } from "../validator/student";

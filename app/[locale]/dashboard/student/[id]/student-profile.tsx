@@ -54,7 +54,7 @@ export default function StudentProfile({ profile }: Props) {
 
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="outline" size="sm" className="ml-auto my-auto">
+          <Button variant="secondary" size="sm" className="ml-auto my-auto">
             <UserRoundPenIcon />
             Edit Profile
           </Button>

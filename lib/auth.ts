@@ -1,4 +1,4 @@
-import { betterAuth } from "better-auth";
+import { betterAuth, User } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { db } from "@/db";
@@ -13,10 +13,21 @@ export const auth = betterAuth({
     schema,
   }),
   plugins: [nextCookies()],
+  cookieCache: {
+    enabled: true,
+    maxAge: 5 * 60,
+  },
 });
 
 export async function getSession() {
   return await auth.api.getSession({
     headers: await headers(),
   });
+}
+
+export async function getUserFromCookies(): Promise<User | null> {
+  const session = await getSession();
+
+  if (!session?.user) return null;
+  return session.user;
 }

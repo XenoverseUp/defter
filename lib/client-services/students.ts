@@ -11,8 +11,8 @@ export async function getStudents() {
   return res.json();
 }
 
-export async function createStudent(data: Omit<StudentData, "id" | "userId" | "createdAt" | "updatedAt">) {
-  const res = await api.students.$post({ json: data });
+export async function createStudent(json: Omit<StudentData, "id" | "userId" | "createdAt" | "updatedAt">) {
+  const res = await api.students.$post({ json });
 
   if (!res.ok) throw new Error("Failed to create student");
 

@@ -35,6 +35,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const pathWithoutLocale = pathname.replace(`/${locale}`, "") || "/";
+
   const session = getSessionCookie(request);
 
   let response = defaultResponse;

@@ -1,14 +1,14 @@
 import { getStudentProfile } from "@/lib/actions/students";
-import { getSession } from "@/lib/auth";
+import { getUserFromCookies } from "@/lib/auth";
 import { UUID } from "crypto";
 
 export default async function StudentProfile({ params }: { params: Promise<{ id: UUID }> }) {
   const { id } = await params;
-  const session = await getSession();
+  const user = await getUserFromCookies();
 
-  if (!session?.user.id) return;
+  if (user === null) return;
 
-  const profile = await getStudentProfile(id, session?.user.id);
+  const profile = await getStudentProfile(id, user.id);
 
   return (
     <section className="mt-16">

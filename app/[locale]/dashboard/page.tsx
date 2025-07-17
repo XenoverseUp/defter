@@ -6,14 +6,10 @@ import { getTranslations } from "next-intl/server";
 import { getStudents } from "@/lib/actions/students";
 import { getUser } from "@/lib/auth";
 import { Link } from "@/i18n/navigation";
+import { Suspense } from "react";
 
 export default async function Dashboard() {
   const t = await getTranslations("Dashboard");
-  const user = await getUser();
-
-  if (!user?.id) return;
-
-  const initialStudentData = await getStudents(user.id);
 
   return (
     <section className="pt-8 pb-16 space-y-8">
@@ -34,10 +30,23 @@ export default async function Dashboard() {
         </Button>
       </header>
 
-      <div>
-        {/* @ts-expect-error date serialaization */}
-        <DataTable initialData={initialStudentData} />
-      </div>
+      <Suspense fallback="Loading...">
+        <Table />
+      </Suspense>
     </section>
+  );
+}
+
+async function Table() {
+  const user = await getUser();
+
+  if (!user?.id) return;
+
+  const initialStudentData = await getStudents(user.id);
+  return (
+    <div>
+      {/* @ts-expect-error date serialaization */}
+      <DataTable initialData={initialStudentData} />
+    </div>
   );
 }

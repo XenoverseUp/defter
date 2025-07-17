@@ -1,7 +1,10 @@
-import { User } from "better-auth";
+import { getUser } from "@/lib/auth";
+
 import BoringAvatars from "boring-avatars";
 
-export default function AuthInfo({ user }: { user: User }) {
+export default async function AuthInfo() {
+  const user = (await getUser())!;
+
   return (
     <div className="flex items-center transition gap-3 select-none rounded-full p-1 pr-3">
       <BoringAvatars name={user.email || "Can Durmus"} className="size-8" />

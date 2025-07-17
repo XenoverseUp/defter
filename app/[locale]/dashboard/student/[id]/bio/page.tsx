@@ -18,7 +18,7 @@ export default async function Bio({ params }: { params: Promise<{ id: UUID }> })
   const Flag = country ? flags[country] : null;
 
   return (
-    <section className="flex flex-col gap-3 py-4 px-5 bg-accent/20 shadow-xs border rounded-lg">
+    <section className="flex flex-col gap-3 pb-4 px-5">
       <div className="flex items-center gap-2">
         <EarthIcon size={16} />
         <div className="text-sm flex items-center gap-1.5">

@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "db:push": "bunx drizzle-kit push",
-    "db:studio": "bunx drizzle-kit studio"
+    "db:studio": "bunx drizzle-kit studio",
+    "preview": "bun run build && bun start"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.1",
@@ -35,6 +36,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "date-fns": "^4.1.0",
     "dotenv": "^17.2.0",
     "drizzle-orm": "^0.44.2",
     "hono": "^4.8.5",
@@ -45,6 +47,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.60.0",
+    "react-hotkeys-hook": "^5.1.0",
     "react-phone-number-input": "^3.4.12",
     "sonner": "^2.0.6",
     "swr": "^2.3.4",

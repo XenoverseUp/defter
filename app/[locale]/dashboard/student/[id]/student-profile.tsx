@@ -48,7 +48,7 @@ export default function StudentProfile({ profile }: Props) {
             <If condition={profile.grade === "middle-school"} renderItem={() => "Middle School"} renderElse={() => "High School"} />
           </Badge>
 
-          <p className="text-xs text-muted-foreground">Created on {new Date().toDateString()}</p>
+          <p className="text-xs text-muted-foreground">Created on {new Date(profile.createdAt).toDateString()}</p>
         </div>
       </div>
 

@@ -32,3 +32,11 @@ export async function createStudentResource(
 
   return res.json();
 }
+
+export async function deleteStudentResource(resourceId: UUID | string) {
+  const res = await api.resources[":id"].$delete({ param: { id: resourceId } });
+
+  if (!res.ok) throw new Error("Failed to delete resource");
+
+  return res.json();
+}

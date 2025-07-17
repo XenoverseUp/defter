@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { EllipsisVerticalIcon, Trash2Icon, UserRoundIcon } from "lucide-react";
+import { EllipsisVerticalIcon, ShapesIcon, SigmaIcon, Trash2Icon, UserRoundIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -9,9 +9,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { deleteStudent, StudentData } from "@/lib/client-services/students";
+import { Badge } from "@/components/ui/badge";
 
 import { toast } from "sonner";
 import { mutateStudents } from "@/lib/hooks/useStudents";
+import { cn } from "@/lib/utils";
+import { If } from "@/components/ui/if";
 
 export function useColumns() {
   const t = useTranslations("Dashboard.table");
@@ -43,7 +46,22 @@ export function useColumns() {
     {
       accessorKey: "grade",
       header: t("grade"),
-      cell: ({ cell }) => (cell.getValue() === "middle-school" ? t("middle-school") : t("high-school")),
+      cell: ({ cell }) => (
+        <Badge
+          variant="secondary"
+          className={cn({
+            "bg-blue-100 text-blue-500": cell.getValue() === "middle-school",
+            "bg-orange-100 text-orange-600": cell.getValue() === "high-school",
+          })}
+        >
+          <If condition={cell.getValue() === "middle-school"} renderItem={() => <ShapesIcon />} renderElse={() => <SigmaIcon />} />
+          <If
+            condition={cell.getValue() === "middle-school"}
+            renderItem={() => t("middle-school")}
+            renderElse={() => t("high-school")}
+          />
+        </Badge>
+      ),
     },
     {
       id: "actions",

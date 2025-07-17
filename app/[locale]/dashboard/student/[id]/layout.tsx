@@ -1,5 +1,5 @@
 import { Link, redirect } from "@/i18n/navigation";
-import { getUserFromCookies } from "@/lib/auth";
+import { getUser } from "@/lib/auth";
 
 import StudentProfile from "./student-profile";
 import NavTab from "./nav-tab";
@@ -13,7 +13,7 @@ import { getStudentProfile } from "@/lib/actions/students";
 export default async function StudentLayout({ children, params }: { children: ReactNode; params: Promise<{ id: UUID }> }) {
   const { id } = await params;
 
-  const user = await getUserFromCookies();
+  const user = await getUser();
   const locale = await getLocale();
 
   if (user === null) return redirect({ href: "/", locale });

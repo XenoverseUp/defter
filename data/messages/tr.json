@@ -111,6 +111,20 @@
     "signed-up": "Başarıyla hesap oluşturuldu.",
     "invalid-credentials": "Yanlış e-posta veya şifre girildi."
   },
+  "subject": {
+    "social-studies": "Sosyal Bilgiler",
+    "science": "Fen Bilgisi",
+    "physics": "Fizik",
+    "chemistry": "Kimya",
+    "biology": "Biyoloji",
+    "history": "Tarih",
+    "geography": "Coğrafya",
+    "geometry": "Geometri",
+    "turkish": "Türkçe",
+    "math": "Matematik",
+    "english": "İngilizce"
+  },
+
   "location-input": {
     "label": "Ülke seçiniz...",
     "search-country-placeholder": "Ülke ara...",

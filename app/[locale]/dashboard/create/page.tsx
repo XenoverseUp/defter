@@ -14,6 +14,7 @@ import { createStudent, StudentData } from "@/lib/client-services/students";
 import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import { mutateStudents } from "@/lib/hooks/useStudents";
+import { gradeEnum } from "@/db/schema";
 
 export type FormSchema = z.infer<ReturnType<typeof buildFormSchema>>;
 
@@ -29,7 +30,7 @@ function buildFormSchema(t: ReturnType<typeof useTranslations>) {
       .min(2, { message: t("lastNameTooShort") })
       .max(32, { message: t("lastNameTooLong") }),
 
-    grade: z.enum(["middle-school", "high-school"], { message: t("gradeRequired") }),
+    grade: z.enum(gradeEnum.enumValues, { message: t("gradeRequired") }),
 
     location: z.tuple([z.string().min(1, { message: t("locationInvalid") }), z.string().optional()]).optional(),
 

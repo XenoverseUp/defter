@@ -1,14 +1,14 @@
-import { If } from "@/components/ui/if";
 import { getStudentResources } from "@/lib/actions/resources";
-import { getUserFromCookies } from "@/lib/auth";
-import { UUID } from "crypto";
-import Empty from "./empty";
+import { getUser } from "@/lib/auth";
+import type { UUID } from "crypto";
+
 import { getStudentProfile } from "@/lib/actions/students";
+import ResourceList from "./resource-list";
 
 export default async function Resources({ params }: { params: Promise<{ id: UUID }> }) {
   const { id } = await params;
 
-  const user = await getUserFromCookies();
+  const user = await getUser();
 
   if (user === null) return;
 
@@ -17,7 +17,14 @@ export default async function Resources({ params }: { params: Promise<{ id: UUID
 
   return (
     <section>
-      <If condition={resources.length === 0} renderItem={() => <Empty profile={profile} />} />
+      <ResourceList
+        initialData={resources.map((resource) => ({
+          ...resource,
+          createdAt: resource.createdAt.toISOString(),
+          updatedAt: resource.updatedAt.toISOString(),
+        }))}
+        profile={profile}
+      />
     </section>
   );
 }

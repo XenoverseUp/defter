@@ -17,3 +17,14 @@ export async function getStudentProfile(studentId: string, userId: string) {
 
   return result[0] ?? null;
 }
+
+export async function doesUserOwnStudent(userId: UUID | string, studentId: UUID | string): Promise<boolean> {
+  const result = await db
+    .select()
+    .from(student)
+    .where(and(eq(student.userId, userId), eq(student.id, studentId)));
+
+  if (result.length > 0) return true;
+
+  return false;
+}

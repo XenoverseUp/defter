@@ -112,6 +112,20 @@
     "invalid-credentials": "Invalid email or password."
   },
 
+  "subject": {
+    "social-studies": "Social Studies",
+    "science": "Science",
+    "physics": "Physics",
+    "chemistry": "Chemistry",
+    "biology": "Biology",
+    "history": "History",
+    "geography": "Geography",
+    "geometry": "Geometry",
+    "turkish": "Turkish",
+    "math": "Math",
+    "english": "English"
+  },
+
   "location-input": {
     "label": "Select Country...",
     "search-country-placeholder": "Search country...",

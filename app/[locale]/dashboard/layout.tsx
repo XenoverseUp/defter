@@ -2,12 +2,12 @@ import AuthInfo from "@/components/layout/auth-info";
 import { LogoutButton } from "@/components/layout/logout-button";
 
 import { Link } from "@/i18n/navigation";
-import { getUserFromCookies } from "@/lib/auth";
+import { getUser } from "@/lib/auth";
 import { Barrel } from "lucide-react";
 import { ReactNode } from "react";
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
-  const user = await getUserFromCookies();
+  const user = await getUser();
 
   if (!user) return;
 

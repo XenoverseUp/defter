@@ -12,7 +12,7 @@ export default function Empty({ profile }: Props) {
       <NotebookIcon className="size-8 fill-sky-500/10 stroke-sky-900" strokeWidth={1.5} />
       <h2 className="text-sm font-medium mt-2 mb-6">No resources found.</h2>
 
-      <CreateResource grade={profile.grade} />
+      <CreateResource grade={profile.grade} studentId={profile.id} />
     </div>
   );
 }

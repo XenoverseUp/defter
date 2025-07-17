@@ -4,6 +4,7 @@ import { nextCookies } from "better-auth/next-js";
 import { db } from "@/db";
 import { schema } from "@/db/schema";
 import { headers } from "next/headers";
+import { cache } from "react";
 
 export const auth = betterAuth({
   appName: "Defter",
@@ -25,9 +26,9 @@ export async function getSession() {
   });
 }
 
-export async function getUserFromCookies(): Promise<User | null> {
+export const getUser = cache(async (): Promise<User | null> => {
   const session = await getSession();
 
   if (!session?.user) return null;
   return session.user;
-}
+});

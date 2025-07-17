@@ -1,10 +1,10 @@
 import { getStudentProfile } from "@/lib/actions/students";
-import { getUserFromCookies } from "@/lib/auth";
+import { getUser } from "@/lib/auth";
 import { UUID } from "crypto";
 
 export default async function StudentProfile({ params }: { params: Promise<{ id: UUID }> }) {
   const { id } = await params;
-  const user = await getUserFromCookies();
+  const user = await getUser();
 
   if (user === null) return;
 

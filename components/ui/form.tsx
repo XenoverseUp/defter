@@ -124,7 +124,12 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   }
 
   return (
-    <p data-slot="form-message" id={formMessageId} className={cn("text-destructive text-xs", className)} {...props}>
+    <p
+      data-slot="form-message"
+      id={formMessageId}
+      className={cn("text-destructive text-xs whitespace-break-spaces break-words", className)}
+      {...props}
+    >
       {body}
     </p>
   );

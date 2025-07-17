@@ -35,29 +35,38 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input, NumberInput } from "@/components/ui/input";
 import { If } from "@/components/ui/if";
+import { subjectEnum } from "@/db/schema";
+
+import { useState } from "react";
+import { createStudentResource } from "@/lib/client-services/resources";
+import type { UUID } from "crypto";
+import { mutateStudentResources } from "@/lib/hooks/useResources";
 
 const formSchema = z.object({
-  subject: z.string(),
-  title: z.string().min(1).min(2).max(36),
-  press: z.string().min(1).min(1).max(36),
+  subject: z.enum(subjectEnum.enumValues, { message: "Please provide a subject." }),
+  title: z.string().trim().min(1).min(2).max(36),
+  press: z.string().trim().min(1).min(1).max(36),
   totalQuestions: z.number().min(10),
-  remainingQuestions: z.number().min(0),
+  questionsRemaining: z.number().min(0),
 });
 
 interface Props {
   grade: "middle-school" | "high-school";
+  studentId: UUID | string;
 }
 
-export default function CreateResource({ grade }: Props) {
+export default function CreateResource({ grade, studentId }: Props) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="sm" variant="outline">
           <PlusCircleIcon />
           Create Resource
         </Button>
       </DialogTrigger>
-      <DialogContent className="p-6">
+      <DialogContent className="p-6 border-none!">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-1.5">
             <NotebookIcon className="size-6" />
@@ -66,32 +75,56 @@ export default function CreateResource({ grade }: Props) {
           <DialogDescription>Create resource in student profile to track their progress.</DialogDescription>
         </DialogHeader>
 
-        <CreateResourceForm {...{ grade }} />
+        <CreateResourceForm {...{ grade, studentId, setOpen }} />
       </DialogContent>
     </Dialog>
   );
 }
 
-function CreateResourceForm({ grade }: Props) {
+function CreateResourceForm({ grade, studentId, setOpen }: Props & { setOpen: (v: boolean) => void }) {
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       press: "",
       title: "",
+      totalQuestions: 0,
+      questionsRemaining: 0,
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
     try {
-      console.log(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>,
+      mutateStudentResources(
+        studentId,
+        async (current = []) => {
+          const created = await createStudentResource(studentId, values);
+          return [created.resource, ...current];
+        },
+        {
+          optimisticData: (current = []) => [
+            {
+              ...values,
+              id: `temp-${Date.now()}`,
+              studentId,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+            ...current,
+          ],
+          rollbackOnError: true,
+          revalidate: false,
+        },
       );
+
+      toast.success("Resource created successfully.");
+      setOpen(false);
     } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
+      const e = error as Error;
+      toast.error(e.message ?? "Failed to submit the form.");
+      setLoading(false);
     }
   }
 
@@ -232,7 +265,7 @@ function CreateResourceForm({ grade }: Props) {
           <div className="col-span-6">
             <FormField
               control={form.control}
-              name="remainingQuestions"
+              name="questionsRemaining"
               render={({ field: { value, onChange } }) => (
                 <FormItem>
                   <FormLabel>Remaining Questions</FormLabel>
@@ -252,9 +285,9 @@ function CreateResourceForm({ grade }: Props) {
               Cancel
             </Button>
           </DialogClose>
-          <Button type="submit" className="">
+          <Button type="submit" disabled={loading}>
             <PlusCircleIcon />
-            Create Resource
+            <If condition={loading} renderItem={() => "Creating..."} renderElse={() => "Create Resource"} />
           </Button>
         </div>
       </form>

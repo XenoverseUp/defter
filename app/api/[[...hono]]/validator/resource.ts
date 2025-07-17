@@ -13,3 +13,7 @@ export const createResourceSchema = z
     message: "Remaining questions cannot exceed total",
     path: ["questionsRemaining"],
   });
+
+export const deleteResourceSchema = z.object({
+  id: z.uuid(),
+});

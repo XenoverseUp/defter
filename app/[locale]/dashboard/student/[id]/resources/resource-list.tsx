@@ -9,11 +9,13 @@ import { StudentData } from "@/lib/client-services/students";
 import { subjectEnum } from "@/db/schema";
 import { useTranslations } from "next-intl";
 
-import { Trash2 } from "lucide-react";
+import { InfoIcon, LoaderIcon, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { If } from "@/components/ui/if";
 import { toast } from "sonner";
 import Empty from "./empty";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface Props {
   initialData: StudentResourceData[];
@@ -32,7 +34,13 @@ export default function ResourceList({ initialData, profile }: Props) {
 
   return (
     <div className="space-y-6">
-      <CreateResource grade={profile.grade} studentId={profile.id} />
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground flex items-center gap-1">
+          <InfoIcon size={16} />
+          The student currently has {data.length} resource{data.length === 1 ? "" : "s"}.
+        </p>
+        <CreateResource grade={profile.grade} studentId={profile.id} />
+      </div>
 
       <div className="space-y-6 mb-8">
         {subjectEnum.enumValues.map((subject) => {
@@ -58,7 +66,7 @@ function SubjectLine({ subject, resources, studentId }: SubjectLineProps) {
   return (
     <div>
       <h3 className="uppercase text-sm font-semibold text-muted-foreground mb-2">{t(subject)}</h3>
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+      <div className="flex flex-col rounded-lg border divide-y shadow-xs">
         {resources.map((resource) => (
           <Resource key={resource.id} data={resource} studentId={studentId} />
         ))}
@@ -85,38 +93,22 @@ function Resource({ data, studentId }: { data: StudentResourceData; studentId: s
   };
 
   return (
-    <div className=" shadow-xs flex flex-col border rounded-lg divide-y relative overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2">
+    <div className="px-4 pt-2 pb-2.5 space-y-1 relative">
+      <div className="flex gap-2 items-center">
         <h4 className="font-semibold capitalize tracking-tight">{data.title}</h4>
-        <p className="text-sm text-muted-foreground capitalize">{data.press}</p>
+        <p className=" text-sm text-muted-foreground capitalize">{data.press}</p>
       </div>
-
-      <div className="divide-x flex">
-        <p className="text-xs grow text-muted-foreground px-4 py-2">Created at {new Date(data.createdAt).toDateString()}</p>
-        {/* <button className="px-4 text-xs font-medium">Edit</button> */}
-        <button onClick={onDeleteClick} className="px-4 text-xs font-medium flex items-center gap-1 hover:bg-accent transition">
-          <Trash2 size={14} />
-          <If condition={deleteLoading} renderItem={() => "Deleting..."} renderElse={() => "Delete"} />
-        </button>
-      </div>
-
-      <div className="px-4 py-3 grow w-full flex items-center justify-between">
-        <p className="text-sm font-medium">
-          {data.questionsRemaining} questions remained out of {data.totalQuestions}.
+      <div className="grow w-full flex items-center gap-2">
+        <p className="text-sm">
+          <span className="font-medium">{data.questionsRemaining}</span> questions remained out of{" "}
+          <span className="font-medium">{data.totalQuestions}</span>.
         </p>
-      </div>
 
-      <div className="w-full flex items-center mt-auto h-5  divide-x">
-        <div className="relative grow h-full overflow-hidden bg-white">
-          <span
-            className="absolute inset-0 bg-stone-900"
-            style={{
-              width: `${progress * 100}%`,
-            }}
-          />
-        </div>
-        <p className="shrink-0 w-12 block text-center font-medium text-xs text-foreground/80">{Math.round(progress * 100)}%</p>
+        <Badge className="rounded-full">{Math.round(progress * 1000) / 10}%</Badge>
       </div>
+      <Button onClick={onDeleteClick} size="icon" variant="secondary" className="ml-auto absolute right-5 top-1/2 -translate-y-1/2">
+        <If condition={deleteLoading} renderItem={() => <LoaderIcon className="animate-spin" />} renderElse={() => <Trash2 />} />
+      </Button>
     </div>
   );
 }

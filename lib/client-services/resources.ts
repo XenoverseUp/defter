@@ -28,7 +28,7 @@ export async function createStudentResource(
     json,
   });
 
-  if (!res.ok) throw new Error("Failed to fetch student resources");
+  if (!res.ok) throw new Error("Failed to create student resources");
 
   return res.json();
 }

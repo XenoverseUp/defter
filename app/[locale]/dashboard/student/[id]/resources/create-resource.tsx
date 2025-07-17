@@ -42,13 +42,18 @@ import { createStudentResource } from "@/lib/client-services/resources";
 import type { UUID } from "crypto";
 import { mutateStudentResources } from "@/lib/hooks/useResources";
 
-const formSchema = z.object({
-  subject: z.enum(subjectEnum.enumValues, { message: "Please provide a subject." }),
-  title: z.string().trim().min(1).min(2).max(36),
-  press: z.string().trim().min(1).min(1).max(36),
-  totalQuestions: z.number().min(10),
-  questionsRemaining: z.number().min(0),
-});
+const formSchema = z
+  .object({
+    title: z.string().trim().min(1),
+    subject: z.enum(subjectEnum.enumValues),
+    press: z.string().trim().min(1),
+    totalQuestions: z.number().int().positive(),
+    questionsRemaining: z.number().int().nonnegative(),
+  })
+  .refine((data) => data.questionsRemaining <= data.totalQuestions, {
+    message: "Remaining questions cannot exceed total.",
+    path: ["questionsRemaining"],
+  });
 
 interface Props {
   grade: "middle-school" | "high-school";
@@ -97,27 +102,10 @@ function CreateResourceForm({ grade, studentId, setOpen }: Props & { setOpen: (v
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     try {
-      mutateStudentResources(
-        studentId,
-        async (current = []) => {
-          const created = await createStudentResource(studentId, values);
-          return [created.resource, ...current];
-        },
-        {
-          optimisticData: (current = []) => [
-            {
-              ...values,
-              id: `temp-${Date.now()}`,
-              studentId,
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            },
-            ...current,
-          ],
-          rollbackOnError: true,
-          revalidate: false,
-        },
-      );
+      await mutateStudentResources(studentId, async (current = []) => {
+        const created = await createStudentResource(studentId, values);
+        return [created.resource, ...current];
+      });
 
       toast.success("Resource created successfully.");
       setOpen(false);

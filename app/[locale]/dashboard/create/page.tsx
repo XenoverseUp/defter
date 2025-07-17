@@ -74,23 +74,22 @@ export default function Create() {
         updatedAt: new Date().toISOString(),
       };
 
-      await mutateStudents(
+      const newStudents = await mutateStudents(
         async (current = []) => {
           const created = await createStudent(optimisticStudent);
           return [created, ...current];
         },
-        {
-          optimisticData: (current = []) => [optimisticStudent, ...current],
-          rollbackOnError: true,
-          revalidate: false,
-        },
+        { revalidate: false },
       );
 
+      const created = newStudents?.[0];
+      if (!created) throw new Error("Couldn't create the student.");
+
       toast.success("Student created successfully.");
-      router.push("/dashboard");
+      router.push(`/dashboard/student/${created.id}`);
     } catch (error) {
       const e = error as Error;
-      toast.error(e.message ?? "Failed to submit the form.");
+      toast.error(e.message ?? "Couldn't create the student.");
       setLoading(false);
     }
   }

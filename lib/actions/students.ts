@@ -1,18 +1,13 @@
 import { db } from "@/db";
-import { cache, cacheKeys } from "@/db/cache";
+
 import { student } from "@/db/schema";
 import { UUID } from "crypto";
 import { and, desc, eq } from "drizzle-orm";
 import { cache as reactCache } from "react";
 
 export const getStudents = reactCache(async (userId: UUID | string) => {
-  const key = cacheKeys.students(userId);
-
-  const cached = await cache.get(key);
-  if (cached) return JSON.parse(cached);
-
   const students = await db.select().from(student).where(eq(student.userId, userId)).orderBy(desc(student.createdAt));
-  await cache.set(key, JSON.stringify(students));
+
   return students;
 });
 

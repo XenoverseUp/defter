@@ -181,6 +181,10 @@ export const verification = pgTable("verification", {
 });
 
 export const schema = {
+  weekdayEnum,
+  assignment,
+  assignmentDay,
+  assignmentEntry,
   student,
   user,
   session,

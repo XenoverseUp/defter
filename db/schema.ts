@@ -1,6 +1,53 @@
 import { sql } from "drizzle-orm";
 import { pgTable, text, timestamp, boolean, uuid, pgEnum, integer, check } from "drizzle-orm/pg-core";
 
+export const weekdayEnum = pgEnum("weekday", ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]);
+
+export const assignment = pgTable("assignment", {
+  id: uuid("id").primaryKey().defaultRandom(),
+
+  studentId: uuid("student_id")
+    .notNull()
+    .references(() => student.id, { onDelete: "cascade" }),
+
+  startsOn: timestamp("starts_on", { mode: "date" }).notNull(),
+
+  active: boolean("active").default(false).notNull(),
+  isValidated: boolean("is_validated").default(false).notNull(),
+
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const assignmentDay = pgTable("assignment_day", {
+  id: uuid("id").primaryKey().defaultRandom(),
+
+  assignmentId: uuid("assignment_id")
+    .notNull()
+    .references(() => assignment.id, { onDelete: "cascade" }),
+
+  day: weekdayEnum("day").notNull(), // enum: monday–sunday
+
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const assignmentEntry = pgTable("assignment_entry", {
+  id: uuid("id").primaryKey().defaultRandom(),
+
+  assignmentDayId: uuid("assignment_day_id")
+    .notNull()
+    .references(() => assignmentDay.id, { onDelete: "cascade" }),
+
+  resourceId: uuid("resource_id")
+    .notNull()
+    .references(() => resource.id, { onDelete: "cascade" }),
+
+  assignedQuestions: integer("assigned_questions").notNull(),
+  solvedQuestions: integer("solved_questions").default(0).notNull(),
+
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+});
+
 export const subjectEnum = pgEnum("subject", [
   // Middle School Only
   "social-studies",
@@ -68,6 +115,7 @@ export const student = pgTable("student", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
+
   createdAt: timestamp("created_at")
     .$defaultFn(() => new Date())
     .notNull(),

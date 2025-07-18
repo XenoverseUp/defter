@@ -6,14 +6,13 @@ import { getStudentProfile } from "@/lib/actions/students";
 import ResourceList from "./resource-list";
 
 export default async function Resources({ params }: { params: Promise<{ id: UUID }> }) {
-  const { id } = await params;
+  const { id: studentId } = await params;
 
   const user = await getUser();
 
   if (user === null) return;
 
-  const profile = await getStudentProfile(id, user.id);
-  const resources = await getStudentResources(id);
+  const [profile, resources] = await Promise.all([getStudentProfile(studentId, user.id), getStudentResources(studentId)]);
 
   return (
     <section>

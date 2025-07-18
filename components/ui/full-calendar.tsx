@@ -260,14 +260,14 @@ const CalendarWeekView = () => {
             key={date.toString()}
             className={cn(
               "text-center flex-1 gap-1 py-2 text-sm text-muted-foreground flex items-center justify-center",
-              [0, 6].includes(i) && "text-muted-foreground/50",
+              [5, 6].includes(i) && "text-muted-foreground/50",
             )}
           >
             {format(date, "E", { locale })}
             <span
               className={cn(
                 "h-6 grid place-content-center",
-                isToday(date) && "bg-primary text-primary-foreground rounded-full size-6",
+                isToday(date) && "bg-sky-500 text-primary-foreground rounded-full size-6 ml-1",
               )}
             >
               {format(date, "d")}
@@ -286,7 +286,7 @@ const CalendarWeekView = () => {
                 )}
                 key={hours[0].toString()}
               >
-                {/* Content */}
+                Content
               </div>
             );
           })}

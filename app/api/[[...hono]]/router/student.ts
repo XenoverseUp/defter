@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { getAuth } from "../middleware/getAuth";
-import { getStudents } from "@/lib/actions/students";
+import { getStudentProfile, getStudents } from "@/lib/actions/students";
 import { zValidator } from "@hono/zod-validator";
 import { resource, student } from "@/db/schema";
 import { and, eq, inArray } from "drizzle-orm";
@@ -57,15 +57,20 @@ export const studentRouter = new Hono()
     return c.json({ success: true, deleted });
   })
 
-  .delete("/:id", zValidator("param", studentIdParamSchema), requireOwnsStudent, async (c) => {
-    const user = c.var.user;
-
+  .get("/:id", zValidator("param", studentIdParamSchema), requireOwnsStudent, async (c) => {
     const params = c.req.valid("param");
 
-    const deleted = await db
-      .delete(student)
-      .where(and(eq(student.id, params.id), eq(student.userId, user.id)))
-      .returning({ id: student.id });
+    const profile = await db.select().from(student).where(eq(student.id, params.id)).limit(1);
+
+    if (!profile.length) return c.json({ success: false, message: "Student not found." }, 404);
+
+    return c.json(profile[0]);
+  })
+
+  .delete("/:id", zValidator("param", studentIdParamSchema), requireOwnsStudent, async (c) => {
+    const params = c.req.valid("param");
+
+    const deleted = await db.delete(student).where(eq(student.id, params.id)).returning({ id: student.id });
 
     if (deleted.length === 0) {
       return c.notFound();
@@ -96,7 +101,7 @@ export const studentRouter = new Hono()
           ...(lastName && { lastName }),
           ...(grade && { grade }),
         })
-        .where(and(eq(student.id, params.id), eq(student.userId, user.id)))
+        .where(eq(student.id, params.id))
         .returning();
 
       if (updated.length === 0) return c.json({ success: false, message: "No such user found!" }, 404);

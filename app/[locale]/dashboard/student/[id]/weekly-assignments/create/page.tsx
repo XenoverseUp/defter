@@ -1,11 +1,26 @@
 "use client";
 
-import AssignmentCalendar, { type Assignment } from "@/components/ui/assignment-calendar";
+import AssignmentCalendar from "@/app/[locale]/dashboard/student/[id]/weekly-assignments/create/assignment-calendar";
 import { Button } from "@/components/ui/button";
-import { NotebookIcon, PencilRulerIcon, PlusCircleIcon } from "lucide-react";
-import { useState } from "react";
+import type { UUID } from "crypto";
+import { PencilRulerIcon, PlusCircleIcon } from "lucide-react";
+import { createContext, useState } from "react";
 
-export default function CreateAssignments() {
+type Assignment = {
+  day: number;
+  questionCount: number;
+  resourceId: UUID | string;
+};
+
+const AssignmentContext = createContext<{
+  assignments: Assignment[];
+  setAssignments: (v: Assignment[]) => void;
+}>({
+  assignments: [],
+  setAssignments: () => {},
+});
+
+function CreateAssignments() {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
 
   return (
@@ -24,7 +39,12 @@ export default function CreateAssignments() {
         </Button>
       </header>
 
-      <AssignmentCalendar {...{ assignments, setAssignments }} />
+      <AssignmentContext.Provider value={{ assignments, setAssignments }}>
+        <AssignmentCalendar />
+      </AssignmentContext.Provider>
     </div>
   );
 }
+
+export { type Assignment, AssignmentContext };
+export default CreateAssignments;

@@ -42,6 +42,8 @@ import { createStudentResource } from "@/lib/client-services/resources";
 import type { UUID } from "crypto";
 import { mutateStudentResources } from "@/lib/hooks/useResources";
 
+import { useTranslations } from "next-intl";
+
 const formSchema = z
   .object({
     title: z.string().trim().min(1),
@@ -88,6 +90,7 @@ export default function CreateResource({ grade, studentId }: Props) {
 
 function CreateResourceForm({ grade, studentId, setOpen }: Props & { setOpen: (v: boolean) => void }) {
   const [loading, setLoading] = useState(false);
+  const tSubject = useTranslations("subject");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -134,15 +137,15 @@ function CreateResourceForm({ grade, studentId, setOpen }: Props & { setOpen: (v
                 <SelectContent>
                   <SelectItem value="turkish">
                     <BookTypeIcon />
-                    Turkish
+                    {tSubject("turkish")}
                   </SelectItem>
                   <SelectItem value="english">
                     <LanguagesIcon />
-                    English
+                    {tSubject("english")}
                   </SelectItem>
                   <SelectItem value="math">
                     <If condition={grade === "high-school"} renderItem={() => <PiIcon />} renderElse={() => <DivideIcon />} />
-                    Math
+                    {tSubject("math")}
                   </SelectItem>
 
                   <If
@@ -151,11 +154,11 @@ function CreateResourceForm({ grade, studentId, setOpen }: Props & { setOpen: (v
                       <>
                         <SelectItem value="social-studies">
                           <PersonStandingIcon />
-                          Social Studies
+                          {tSubject("social-studies")}
                         </SelectItem>
                         <SelectItem value="science">
                           <FlaskConicalIcon />
-                          Science
+                          {tSubject("science")}
                         </SelectItem>
                       </>
                     )}
@@ -163,27 +166,27 @@ function CreateResourceForm({ grade, studentId, setOpen }: Props & { setOpen: (v
                       <>
                         <SelectItem value="geometry">
                           <ConeIcon />
-                          Geometry
+                          {tSubject("geometry")}
                         </SelectItem>
                         <SelectItem value="physics">
                           <AtomIcon />
-                          Physics
+                          {tSubject("physics")}
                         </SelectItem>
                         <SelectItem value="chemistry">
                           <FlaskConicalIcon />
-                          Chemistry
+                          {tSubject("chemistry")}
                         </SelectItem>
                         <SelectItem value="biology">
                           <LeafIcon />
-                          Biology
+                          {tSubject("biology")}
                         </SelectItem>
                         <SelectItem value="history">
                           <SwordsIcon />
-                          History
+                          {tSubject("history")}
                         </SelectItem>
                         <SelectItem value="geography">
                           <MapIcon />
-                          Geography
+                          {tSubject("geography")}
                         </SelectItem>
                       </>
                     )}

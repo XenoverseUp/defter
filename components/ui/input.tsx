@@ -49,10 +49,11 @@ interface NumberInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   max?: number;
   step?: number;
   onValueChange?: (value: number) => void;
+  disabled?: boolean;
 }
 
 const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
-  ({ className, min = 0, max = Infinity, step = 1, value: controlledValue, onChange, onValueChange, ...props }, ref) => {
+  ({ className, min = 0, max = Infinity, step = 1, value: controlledValue, onChange, onValueChange, disabled, ...props }, ref) => {
     const isControlled = controlledValue !== undefined;
     const [internalValue, setInternalValue] = React.useState<number>(Number(controlledValue) || 0);
     const value = isControlled ? Number(controlledValue) : internalValue;
@@ -86,11 +87,12 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
 
     return (
       <div
+        aria-disabled={disabled}
+        data-disabled={disabled}
         className={cn(
           "inline-flex h-9 w-full items-center overflow-hidden rounded-md border transition border-input shadow-xs",
-          "disabled:opacity-50",
           "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
-          "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+          'data-[disabled="true"]:pointer-events-none data-[disabled="true"]:cursor-not-allowed data-[disabled="true"]:opacity-50',
           className,
         )}
       >
@@ -100,7 +102,8 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           size="icon"
           className="h-full rounded-none border-r"
           onClick={() => updateValue(value - step)}
-          disabled={value <= min}
+          disabled={disabled || value <= min}
+          tabIndex={disabled ? -1 : 0}
         >
           <MinusIcon size={16} />
         </Button>
@@ -109,14 +112,26 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           ref={setInputRef}
           type="number"
           inputMode="numeric"
-          className="h-full w-full outline-none ring-0! border-0 px-3 text-center tabular-nums"
+          className={cn(
+            "h-full w-full outline-none ring-0! border-0 px-3 text-center tabular-nums",
+            "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+          )}
           value={value}
+          disabled={disabled}
           onChange={(e) => {
+            if (disabled) return;
             const next = Number(e.target.value);
             if (!Number.isNaN(next)) updateValue(next);
           }}
-          onClick={() => inputRef.current?.select()}
-          onFocus={() => inputRef.current?.select()}
+          onClick={() => {
+            if (disabled) return;
+            inputRef.current?.select();
+          }}
+          onFocus={() => {
+            if (disabled) return;
+            inputRef.current?.select();
+          }}
+          tabIndex={disabled ? -1 : 0}
           {...props}
         />
 
@@ -126,7 +141,8 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           size="icon"
           className="h-full rounded-none border-l"
           onClick={() => updateValue(value + step)}
-          disabled={value >= max}
+          disabled={disabled || value >= max}
+          tabIndex={disabled ? -1 : 0}
         >
           <PlusIcon size={16} />
         </Button>

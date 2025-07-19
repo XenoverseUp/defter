@@ -16,6 +16,7 @@ import { mutateStudents } from "@/lib/hooks/useStudents";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { useStudentProfile } from "@/lib/hooks/useStudentProfile";
 
 interface Props {
   profile: Awaited<ReturnType<typeof getStudentProfile>>;
@@ -24,6 +25,15 @@ interface Props {
 export default function StudentProfile({ profile }: Props) {
   const router = useRouter();
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  useStudentProfile({
+    id: profile.id,
+    fallbackData: {
+      ...profile,
+      createdAt: profile.createdAt.toISOString(),
+      updatedAt: profile.updatedAt.toISOString(),
+    },
+  });
 
   const onDeleteClick = async () => {
     setDeleteLoading(true);

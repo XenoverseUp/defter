@@ -7,7 +7,6 @@ import { useParams } from "next/navigation";
 import CreateResource from "./create-resource";
 import { StudentData } from "@/lib/client-services/students";
 import { subjectEnum } from "@/db/schema";
-import { useTranslations } from "next-intl";
 
 import { InfoIcon, LoaderIcon, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -17,8 +16,10 @@ import Empty from "./empty";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
+import { useTranslations } from "next-intl";
+
 interface Props {
-  initialData: StudentResourceData[];
+  initialData?: StudentResourceData[];
   profile: Omit<StudentData, "createdAt" | "updatedAt">;
 }
 
@@ -30,42 +31,44 @@ export default function ResourceList({ initialData, profile }: Props) {
     id,
   });
 
-  if (data.length === 0) return <Empty profile={profile} />;
+  if (!data) return "Loading..."; // !TODO: Skeleton
+
+  if (data!.length === 0) return <Empty profile={profile} />;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground flex items-center gap-1">
           <InfoIcon size={16} />
-          The student currently has {data.length} resource{data.length === 1 ? "" : "s"}.
+          The student currently has {data!.length} resource{data!.length === 1 ? "" : "s"}.
         </p>
         <CreateResource grade={profile.grade} studentId={profile.id} />
       </div>
 
       <div className="space-y-6 mb-8">
         {subjectEnum.enumValues.map((subject) => {
-          const resources = data.filter((item) => item.subject === subject);
+          const resources = data!.filter((item) => item.subject === subject);
 
           if (resources.length === 0) return null;
-          return <SubjectLine key={`${profile.id}-${subject}`} {...{ subject, resources }} studentId={profile.id} />;
+          return <SubjectGroup key={`${profile.id}-${subject}`} {...{ subject, resources }} studentId={profile.id} />;
         })}
       </div>
     </div>
   );
 }
 
-interface SubjectLineProps {
+interface SubjectGroupProps {
   subject: (typeof subjectEnum.enumValues)[number];
   resources: StudentResourceData[];
   studentId: string;
 }
 
-function SubjectLine({ subject, resources, studentId }: SubjectLineProps) {
-  const t = useTranslations("subject");
+function SubjectGroup({ subject, resources, studentId }: SubjectGroupProps) {
+  const tSubject = useTranslations("subject");
 
   return (
     <div>
-      <h3 className="uppercase text-sm font-semibold text-muted-foreground mb-2">{t(subject)}</h3>
+      <h3 className="uppercase text-sm font-semibold text-muted-foreground mb-2">{tSubject(subject)}</h3>
       <div className="flex flex-col rounded-lg border divide-y shadow-xs">
         {resources.map((resource) => (
           <Resource key={resource.id} data={resource} studentId={studentId} />
@@ -83,8 +86,11 @@ function Resource({ data, studentId }: { data: StudentResourceData; studentId: s
     setDeleteLoading(true);
 
     try {
-      await deleteStudentResource(data.id);
-      await mutateStudentResources(studentId);
+      await mutateStudentResources(studentId, async (current) => {
+        await deleteStudentResource(data.id);
+        return current?.filter((r) => r.id !== data.id);
+      });
+
       toast.success("Successfully deleted resource.");
     } catch {
       setDeleteLoading(false);

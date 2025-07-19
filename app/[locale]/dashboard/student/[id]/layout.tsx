@@ -1,4 +1,4 @@
-import { Link, redirect } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { getUser } from "@/lib/auth";
 
 import StudentProfile from "./student-profile";
@@ -9,6 +9,7 @@ import { getLocale } from "next-intl/server";
 import { ChevronLeftIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getStudentProfile } from "@/lib/actions/students";
+import {redirect} from "next/navigation";
 
 export default async function StudentLayout({ children, params }: { children: ReactNode; params: Promise<{ id: UUID }> }) {
   const { id } = await params;
@@ -16,10 +17,10 @@ export default async function StudentLayout({ children, params }: { children: Re
   const user = await getUser();
   const locale = await getLocale();
 
-  if (user === null) return redirect({ href: "/", locale });
+  if (user === null) return redirect('/');
 
   const profile = await getStudentProfile(id, user.id);
-  if (!profile) return redirect({ href: "/dashboard", locale });
+  if (!profile) return redirect("/");
 
   return (
     <div className="pt-4">

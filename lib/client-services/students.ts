@@ -11,6 +11,18 @@ export async function getStudents() {
   return res.json();
 }
 
+export async function getStudentProfile(studentId: string) {
+  const res = await api.students[":id"].$get({
+    param: {
+      id: studentId,
+    },
+  });
+
+  if (!res.ok) throw new Error("Failed to get students");
+
+  return res.json();
+}
+
 export async function createStudent(json: Omit<StudentData, "id" | "userId" | "createdAt" | "updatedAt">) {
   const res = await api.students.$post({ json });
 

@@ -6,7 +6,7 @@ const keyFor = (id: string) => `students-resources/${id}` as const;
 
 interface Params {
   id: string | UUID;
-  fallbackData: StudentResourceData[];
+  fallbackData?: StudentResourceData[];
 }
 
 export function useStudentResources({ id, fallbackData }: Params) {

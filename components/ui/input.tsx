@@ -50,13 +50,20 @@ interface NumberInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   step?: number;
   onValueChange?: (value: number) => void;
   disabled?: boolean;
+  format?: string;
 }
 
 const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
-  ({ className, min = 0, max = Infinity, step = 1, value: controlledValue, onChange, onValueChange, disabled, ...props }, ref) => {
+  (
+    { className, min = 0, max = Infinity, step = 1, value: controlledValue, onChange, onValueChange, disabled, format, ...props },
+    ref,
+  ) => {
     const isControlled = controlledValue !== undefined;
     const [internalValue, setInternalValue] = React.useState<number>(Number(controlledValue) || 0);
+    const [isFocused, setIsFocused] = React.useState(false);
     const value = isControlled ? Number(controlledValue) : internalValue;
+
+    const displayValue = isFocused || !format ? value.toString() : format.replace("%d", value.toString());
 
     const inputRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -85,6 +92,40 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
       }
     };
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (disabled) return;
+      const inputValue = e.target.value;
+
+      let next: number;
+      if (format && !isFocused) {
+        const escapedFormat = format.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&").replace("%d", "(\\d+)");
+        const regex = new RegExp(`^${escapedFormat}$`);
+        const match = inputValue.match(regex);
+        next = match ? Number(match[1]) : Number(inputValue.replace(/[^0-9.-]/g, ""));
+      } else {
+        next = Number(inputValue.replace(/[^0-9.-]/g, ""));
+      }
+
+      if (!Number.isNaN(next)) {
+        updateValue(next);
+      }
+    };
+
+    const selectNumericPart = () => {
+      if (disabled || !inputRef.current) return;
+
+      const input = inputRef.current;
+      input.select();
+
+      if (format && !isFocused) {
+        const formattedValue = format.replace("%d", value.toString());
+        const numStr = value.toString();
+        const start = formattedValue.indexOf(numStr);
+        const end = start + numStr.length;
+        input.setSelectionRange(start, end);
+      }
+    };
+
     return (
       <div
         aria-disabled={disabled}
@@ -110,26 +151,24 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
 
         <Input
           ref={setInputRef}
-          type="number"
+          type="text"
           inputMode="numeric"
           className={cn(
             "h-full w-full outline-none ring-0! border-0 px-3 text-center tabular-nums",
             "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
           )}
-          value={value}
+          value={displayValue}
           disabled={disabled}
-          onChange={(e) => {
-            if (disabled) return;
-            const next = Number(e.target.value);
-            if (!Number.isNaN(next)) updateValue(next);
-          }}
-          onClick={() => {
-            if (disabled) return;
-            inputRef.current?.select();
-          }}
+          onChange={handleInputChange}
+          onClick={selectNumericPart}
           onFocus={() => {
             if (disabled) return;
-            inputRef.current?.select();
+            setIsFocused(true);
+            setTimeout(selectNumericPart, 0);
+          }}
+          onBlur={() => {
+            if (disabled) return;
+            setIsFocused(false);
           }}
           tabIndex={disabled ? -1 : 0}
           {...props}

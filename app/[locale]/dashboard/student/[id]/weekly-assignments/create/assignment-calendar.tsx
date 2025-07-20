@@ -36,9 +36,9 @@ export default function AssignmentCalendar() {
 }
 
 function DayView({ index, date, items = [], children }: { index: number; date: Date; items?: Assignment[]; children?: ReactNode }) {
-  const { id } = useParams<{ id: string }>();
-  const { data } = useStudentResources({ id });
-  const resources = data!;
+  // const { id } = useParams<{ id: string }>();
+  // const { data } = useStudentResources({ id });
+  // const resources = data!;
 
   if (index >= 7) return;
 

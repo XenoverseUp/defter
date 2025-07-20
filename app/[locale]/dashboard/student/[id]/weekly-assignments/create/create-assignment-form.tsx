@@ -159,7 +159,13 @@ export default function CreateAssignmentForm({ title, day = 0 }: { title: string
 
                 return (
                   <div className="flex items-center gap-2">
-                    <NumberInput value={field.value} onValueChange={field.onChange} disabled={isDisabled} />
+                    <NumberInput
+                      value={field.value}
+                      max={resources.find(({ id }) => selectedResourceId === id)?.questionsRemaining}
+                      onValueChange={field.onChange}
+                      disabled={isDisabled}
+                      format="%d questions"
+                    />
                   </div>
                 );
               }}

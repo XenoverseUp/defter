@@ -3,8 +3,8 @@
 import AssignmentCalendar from "@/app/[locale]/dashboard/student/[id]/weekly-assignments/create/assignment-calendar";
 import { Button } from "@/components/ui/button";
 import type { UUID } from "crypto";
-import { PencilRulerIcon, PlusCircleIcon } from "lucide-react";
-import { createContext, useState } from "react";
+import { PlusCircleIcon } from "lucide-react";
+import { createContext, Dispatch, SetStateAction, useState } from "react";
 
 type Assignment = {
   day: number;
@@ -14,7 +14,7 @@ type Assignment = {
 
 const AssignmentContext = createContext<{
   assignments: Assignment[];
-  setAssignments: (v: Assignment[]) => void;
+  setAssignments: Dispatch<SetStateAction<Assignment[]>>;
 }>({
   assignments: [],
   setAssignments: () => {},
@@ -28,7 +28,7 @@ function CreateAssignments() {
       <header className="flex px-6 items-center gap-4">
         <div>
           <h2 className="text-lg font-medium flex items-center gap-1.5">
-            <PencilRulerIcon className="size-5" strokeWidth={1.5} />
+            {/* <PencilRulerIcon className="size-5" strokeWidth={1.5} /> */}
             Weekly Schedule
           </h2>
         </div>

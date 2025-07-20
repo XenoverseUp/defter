@@ -1,5 +1,5 @@
 import { NotebookIcon } from "lucide-react";
-import CreateResource from "./create-resource";
+import CreateResource from "./create-resource-form";
 import { StudentData } from "@/lib/client-services/students";
 
 interface Props {

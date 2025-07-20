@@ -55,7 +55,19 @@ interface NumberInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
   (
-    { className, min = 0, max = Infinity, step = 1, value: controlledValue, onChange, onValueChange, disabled, format, ...props },
+    {
+      className,
+      min = 0,
+      max = Infinity,
+      step = 1,
+      value: controlledValue,
+      onChange,
+      onValueChange,
+      disabled,
+      format,
+      "aria-invalid": ariaInvalid,
+      ...props
+    },
     ref,
   ) => {
     const isControlled = controlledValue !== undefined;
@@ -116,7 +128,6 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
 
       const input = inputRef.current;
       input.select();
-
       if (format && !isFocused) {
         const formattedValue = format.replace("%d", value.toString());
         const numStr = value.toString();
@@ -130,9 +141,11 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
       <div
         aria-disabled={disabled}
         data-disabled={disabled}
+        aria-invalid={ariaInvalid}
         className={cn(
-          "inline-flex h-9 w-full items-center overflow-hidden rounded-md border transition border-input shadow-xs",
+          "inline-flex h-9 w-full min-w-0 items-center overflow-hidden rounded-md border bg-transparent shadow-xs transition-[color,box-shadow]",
           "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
+          "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
           'data-[disabled="true"]:pointer-events-none data-[disabled="true"]:cursor-not-allowed data-[disabled="true"]:opacity-50',
           className,
         )}
@@ -171,6 +184,7 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
             setIsFocused(false);
           }}
           tabIndex={disabled ? -1 : 0}
+          aria-invalid={ariaInvalid}
           {...props}
         />
 

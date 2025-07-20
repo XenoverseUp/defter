@@ -47,7 +47,7 @@ import { useTranslations } from "next-intl";
 const formSchema = z
   .object({
     title: z.string().trim().min(1),
-    subject: z.enum(subjectEnum.enumValues),
+    subject: z.enum(subjectEnum.enumValues, { message: "Please provide a subject." }),
     press: z.string().trim().min(1),
     totalQuestions: z.number().int().positive(),
     questionsRemaining: z.number().int().nonnegative(),

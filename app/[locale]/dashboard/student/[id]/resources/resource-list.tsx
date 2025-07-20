@@ -4,7 +4,7 @@ import { deleteStudentResource, StudentResourceData } from "@/lib/client-service
 import { mutateStudentResources, useStudentResources } from "@/lib/hooks/useResources";
 import type { UUID } from "crypto";
 import { useParams } from "next/navigation";
-import CreateResource from "./create-resource";
+import CreateResource from "./create-resource-form";
 import { StudentData } from "@/lib/client-services/students";
 import { subjectEnum } from "@/db/schema";
 

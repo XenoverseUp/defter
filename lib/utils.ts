@@ -8,14 +8,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export namespace Formatting {
-  export function subject(subject: (typeof subjectEnum.enumValues)[number]) {
-    const t = useTranslations("subject");
-
-    return t(subject);
-  }
-}
-
 export namespace DateUtils {
   export function format(date: Date, options: Intl.DateTimeFormatOptions, locale: string = "en-US") {
     return new Intl.DateTimeFormat(locale, options).format(date);

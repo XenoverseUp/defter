@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { NumberInput } from "@/components/ui/input";
 import {
   Select,
@@ -17,9 +17,9 @@ import { StudentResourceData } from "@/lib/client-services/resources";
 import { useStudentResources } from "@/lib/hooks/useResources";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarDaysIcon, PlusIcon } from "lucide-react";
+import { CalendarDaysIcon } from "lucide-react";
 import { useParams } from "next/navigation";
-import { Fragment, useContext, useState } from "react";
+import { Fragment, ReactNode, useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { useTranslations } from "next-intl";
@@ -44,7 +44,7 @@ const createAssignmentSchema = (resources: StudentResourceData[]) =>
       },
     );
 
-export default function CreateAssignmentForm({ title, day = 0 }: { title: string; day: number }) {
+export default function CreateAssignmentForm({ title, day = 0, children }: { title: string; day: number; children: ReactNode }) {
   const tSubject = useTranslations("subject");
 
   const { id } = useParams<{ id: string }>();
@@ -77,11 +77,7 @@ export default function CreateAssignmentForm({ title, day = 0 }: { title: string
         if (open) form.reset();
       }}
     >
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="shadow-none">
-          <PlusIcon />
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="p-6 border-none!">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-1.5">
@@ -101,7 +97,7 @@ export default function CreateAssignmentForm({ title, day = 0 }: { title: string
                     <If
                       condition={!!selectedResourceId}
                       renderItem={() => (
-                        <span className="flex items-center shrink-0 py-1 rounded-md gap-1 text-muted-foreground font-mono text-xs">
+                        <span className="flex items-center shrink-0 py-1 rounded-md gap-1 text-muted-foreground text-xs">
                           {resources.find(({ id }) => selectedResourceId === id)?.questionsRemaining} questions remaining.
                         </span>
                       )}
@@ -146,6 +142,7 @@ export default function CreateAssignmentForm({ title, day = 0 }: { title: string
                       })}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -158,15 +155,19 @@ export default function CreateAssignmentForm({ title, day = 0 }: { title: string
                 const isDisabled = !selectedResourceId;
 
                 return (
-                  <div className="flex items-center gap-2">
-                    <NumberInput
-                      value={field.value}
-                      max={resources.find(({ id }) => selectedResourceId === id)?.questionsRemaining}
-                      onValueChange={field.onChange}
-                      disabled={isDisabled}
-                      format="%d questions"
-                    />
-                  </div>
+                  <FormItem>
+                    <FormLabel>Question Count</FormLabel>
+                    <FormControl>
+                      <NumberInput
+                        value={field.value}
+                        max={resources.find(({ id }) => selectedResourceId === id)?.questionsRemaining}
+                        onValueChange={field.onChange}
+                        disabled={isDisabled}
+                        format="%d questions"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 );
               }}
             />

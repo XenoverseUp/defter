@@ -31,7 +31,7 @@ const createAssignmentSchema = (resources: StudentResourceData[]) =>
   z
     .object({
       resourceId: z.uuid(),
-      questionCount: z.number().min(1),
+      questionCount: z.number().min(1, { message: "Assign at least 1 question." }),
     })
     .refine(
       (data) => {
@@ -58,7 +58,7 @@ export default function CreateAssignmentForm({ title, day = 0, children }: { tit
   const form = useForm({
     resolver: zodResolver(createAssignmentSchema(resources)),
     defaultValues: {
-      questionCount: 0,
+      questionCount: 1,
     },
   });
 
@@ -106,7 +106,7 @@ export default function CreateAssignmentForm({ title, day = 0, children }: { tit
                   <Select
                     onValueChange={(val) => {
                       field.onChange(val);
-                      form.setValue("questionCount", 0);
+                      form.setValue("questionCount", 1);
                     }}
                     value={field.value}
                   >

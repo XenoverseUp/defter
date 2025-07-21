@@ -2,9 +2,10 @@
 
 import AssignmentCalendar from "@/app/[locale]/dashboard/student/[id]/weekly-assignments/create/assignment-calendar";
 import { Button } from "@/components/ui/button";
+import { If } from "@/components/ui/if";
 import type { UUID } from "crypto";
 import { PlusCircleIcon } from "lucide-react";
-import { createContext, Dispatch, SetStateAction, useState } from "react";
+import { createContext, Dispatch, SetStateAction, useMemo, useState } from "react";
 
 type Assignment = {
   day: number;
@@ -22,6 +23,10 @@ const AssignmentContext = createContext<{
 
 function CreateAssignments() {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const totalQuestions = useMemo(
+    () => assignments.map(({ questionCount }) => questionCount).reduce((a, b) => a + b, 0),
+    [assignments],
+  );
 
   return (
     <div className="py-6 flex flex-col gap-6">
@@ -34,14 +39,25 @@ function CreateAssignments() {
         </div>
 
         <p className="ml-auto text-sm font-medium">July 2025</p>
-        <Button size="sm">
-          <PlusCircleIcon /> Assign
-        </Button>
       </header>
 
       <AssignmentContext.Provider value={{ assignments, setAssignments }}>
         <AssignmentCalendar />
       </AssignmentContext.Provider>
+
+      <div className="flex justify-end items-center gap-4 w-full">
+        <If
+          condition={totalQuestions > 0}
+          renderItem={() => (
+            <div>
+              <p className="text-xs text-muted-foreground">{totalQuestions} questions were planned for this week.</p>
+            </div>
+          )}
+        />
+        <Button variant="outline">
+          <PlusCircleIcon /> Assign
+        </Button>
+      </div>
     </div>
   );
 }

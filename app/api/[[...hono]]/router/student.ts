@@ -13,6 +13,8 @@ import { getStudentResources } from "@/lib/actions/resources";
 export const studentRouter = new Hono()
   .use(getAuth)
 
+  /* Students */
+
   .get("/", async (c) => {
     const { user } = c.var;
     const students = await getStudents(user.id);
@@ -109,6 +111,8 @@ export const studentRouter = new Hono()
       return c.json({ success: true, data: updated[0] });
     },
   )
+
+  /* Student Resources */
 
   .get("/:id/resources", zValidator("param", studentIdParamSchema), requireOwnsStudent, async (c) => {
     const student = c.var.student;

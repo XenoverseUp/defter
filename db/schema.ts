@@ -1,8 +1,6 @@
 import { sql } from "drizzle-orm";
 import { pgTable, text, timestamp, boolean, uuid, pgEnum, integer, check } from "drizzle-orm/pg-core";
 
-export const weekdayEnum = pgEnum("weekday", ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]);
-
 export const assignment = pgTable("assignment", {
   id: uuid("id").primaryKey().defaultRandom(),
 
@@ -26,7 +24,7 @@ export const assignmentDay = pgTable("assignment_day", {
     .notNull()
     .references(() => assignment.id, { onDelete: "cascade" }),
 
-  day: weekdayEnum("day").notNull(), // enum: monday–sunday
+  day: integer().notNull(), // monday: 0 to sunday: 6
 
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
 });
@@ -181,7 +179,6 @@ export const verification = pgTable("verification", {
 });
 
 export const schema = {
-  weekdayEnum,
   assignment,
   assignmentDay,
   assignmentEntry,

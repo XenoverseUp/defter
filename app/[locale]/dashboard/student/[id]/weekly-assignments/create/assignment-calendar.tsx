@@ -4,9 +4,7 @@ import { useParams } from "next/navigation";
 import { ReactNode, useContext } from "react";
 import { Assignment, AssignmentContext } from "./page";
 import CreateAssignmentForm from "./create-assignment-form";
-import { If } from "@/components/ui/if";
 
-import { Button } from "@/components/ui/button";
 import {
   AtomIcon,
   BookTypeIcon,
@@ -17,7 +15,6 @@ import {
   MapIcon,
   PersonStandingIcon,
   PiIcon,
-  PlusIcon,
   SwordsIcon,
   XIcon,
 } from "lucide-react";
@@ -29,29 +26,15 @@ export default function AssignmentCalendar() {
   const { id } = useParams<{ id: string }>();
   const { assignments } = useContext(AssignmentContext);
 
-  const { isLoading, data } = useStudentResources({ id });
+  const { isLoading } = useStudentResources({ id });
 
   if (isLoading) return <AssignmentCalendarSkeleton />;
-  const resources = data!;
 
   return (
-    <div className="w-full min-h-96 grid grid-cols-7 grid-rows-1 rounded-lg divide-x border">
+    <div className="w-full min-h-90 grid grid-cols-7 grid-rows-1 rounded-lg divide-x border">
       {DateUtils.getCurrentWeekdates().map((date, i) => (
         <DayView key={`day-view-${i}`} index={i} date={date} items={assignments.filter(({ day }) => day === i)}>
-          <If
-            condition={
-              !!resources.filter(
-                (resource) => resource.questionsRemaining > 0 && !assignments.map((a) => a.resourceId).includes(resource.id),
-              ).length
-            }
-            renderItem={() => (
-              <CreateAssignmentForm title={DateUtils.format(date, { day: "numeric", weekday: "long", year: "numeric" })} day={i}>
-                <Button variant="outline" size="sm" className="shadow-none">
-                  <PlusIcon />
-                </Button>
-              </CreateAssignmentForm>
-            )}
-          />
+          <CreateAssignmentForm title={DateUtils.format(date, { day: "numeric", weekday: "long", year: "numeric" })} day={i} />
         </DayView>
       ))}
     </div>
@@ -83,7 +66,7 @@ function DayView({ index, date, items = [], children }: { index: number; date: D
         })}
       >
         {items.map((item) => (
-          <Entry key={item.resourceId} {...{ item }} />
+          <Entry key={item.id} {...{ item }} />
         ))}
 
         {children}

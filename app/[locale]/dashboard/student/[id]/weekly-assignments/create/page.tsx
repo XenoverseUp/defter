@@ -3,14 +3,15 @@
 import AssignmentCalendar from "@/app/[locale]/dashboard/student/[id]/weekly-assignments/create/assignment-calendar";
 import { Button } from "@/components/ui/button";
 import { If } from "@/components/ui/if";
-import type { UUID } from "crypto";
+
 import { PlusCircleIcon } from "lucide-react";
 import { createContext, Dispatch, SetStateAction, useMemo, useState } from "react";
 
 type Assignment = {
   day: number;
   questionCount: number;
-  resourceId: UUID | string;
+  resourceId: string;
+  id: string;
 };
 
 const AssignmentContext = createContext<{
@@ -54,7 +55,7 @@ function CreateAssignments() {
             </div>
           )}
         />
-        <Button variant="outline">
+        <Button variant="outline" disabled={!assignments.length}>
           <PlusCircleIcon /> Assign
         </Button>
       </div>

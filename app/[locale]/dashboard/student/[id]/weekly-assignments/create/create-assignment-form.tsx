@@ -17,17 +17,18 @@ import { StudentResourceData } from "@/lib/client-services/resources";
 import { useStudentResources } from "@/lib/hooks/useResources";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarDaysIcon } from "lucide-react";
+import { CalendarDaysIcon, PlusIcon } from "lucide-react";
 import { useParams } from "next/navigation";
-import { Fragment, ReactNode, useContext, useState } from "react";
+import { Fragment, useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { AssignmentContext } from "./page";
 import { If } from "@/components/ui/if";
+import { cn } from "@/lib/utils";
 
-const createAssignmentSchema = (resources: StudentResourceData[]) =>
+const createAssignmentSchema = (resources: StudentResourceData[], assignedCounts: Record<string, number>) =>
   z
     .object({
       resourceId: z.uuid(),
@@ -36,7 +37,8 @@ const createAssignmentSchema = (resources: StudentResourceData[]) =>
     .refine(
       (data) => {
         const selected = resources.find((r) => r.id === data.resourceId);
-        return selected ? data.questionCount <= selected.questionsRemaining : false;
+        const alreadyAssigned = assignedCounts[data.resourceId] || 0;
+        return selected ? data.questionCount + alreadyAssigned <= selected.questionsRemaining : false;
       },
       {
         message: "Question count exceeds available questions for selected resource.",
@@ -44,19 +46,27 @@ const createAssignmentSchema = (resources: StudentResourceData[]) =>
       },
     );
 
-export default function CreateAssignmentForm({ title, day = 0, children }: { title: string; day: number; children: ReactNode }) {
+export default function CreateAssignmentForm({ title, day = 0 }: { title: string; day: number }) {
   const tSubject = useTranslations("subject");
-
   const { id } = useParams<{ id: string }>();
   const { assignments, setAssignments } = useContext(AssignmentContext);
 
   const [open, setOpen] = useState(false);
-
   const { data } = useStudentResources({ id });
   const resources = data!;
 
+  const assignedCounts: Record<string, number> = {};
+  for (const assignment of assignments) {
+    assignedCounts[assignment.resourceId] = (assignedCounts[assignment.resourceId] || 0) + assignment.questionCount;
+  }
+
+  const hasAssignableResources = resources.some((resource) => {
+    const assigned = assignedCounts[resource.id] || 0;
+    return resource.questionsRemaining - assigned > 0;
+  });
+
   const form = useForm({
-    resolver: zodResolver(createAssignmentSchema(resources)),
+    resolver: zodResolver(createAssignmentSchema(resources, assignedCounts)),
     defaultValues: {
       questionCount: 1,
     },
@@ -65,7 +75,7 @@ export default function CreateAssignmentForm({ title, day = 0, children }: { tit
   const selectedResourceId = form.watch("resourceId");
 
   async function onSubmit(values: z.infer<ReturnType<typeof createAssignmentSchema>>) {
-    setAssignments([...assignments, { ...values, day }]);
+    setAssignments([...assignments, { ...values, day, id: crypto.randomUUID() }]);
     setOpen(false);
   }
 
@@ -77,7 +87,17 @@ export default function CreateAssignmentForm({ title, day = 0, children }: { tit
         if (open) form.reset();
       }}
     >
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className={cn("shadow-none", {
+            hidden: !hasAssignableResources,
+          })}
+        >
+          <PlusIcon />
+        </Button>
+      </DialogTrigger>
       <DialogContent className="p-6 border-none!">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-1.5">
@@ -96,11 +116,15 @@ export default function CreateAssignmentForm({ title, day = 0, children }: { tit
                     Resource
                     <If
                       condition={!!selectedResourceId}
-                      renderItem={() => (
-                        <span className="flex items-center shrink-0 py-1 rounded-md gap-1 text-muted-foreground text-xs">
-                          {resources.find(({ id }) => selectedResourceId === id)?.questionsRemaining} questions remaining.
-                        </span>
-                      )}
+                      renderItem={() => {
+                        const res = resources.find((r) => r.id === selectedResourceId)!;
+                        const alreadyAssigned = assignedCounts[selectedResourceId] || 0;
+                        return (
+                          <span className="flex items-center shrink-0 py-1 rounded-md gap-1 text-muted-foreground text-xs">
+                            {res.questionsRemaining - alreadyAssigned} questions remaining.
+                          </span>
+                        );
+                      }}
                     />
                   </FormLabel>
                   <Select
@@ -112,17 +136,16 @@ export default function CreateAssignmentForm({ title, day = 0, children }: { tit
                   >
                     <FormControl>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select one of the resources." />{" "}
+                        <SelectValue placeholder="Select one of the resources." />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {subjectEnum.enumValues.map((subject) => {
-                        const resourceList = resources.filter(
-                          (resource) =>
-                            resource.subject === subject &&
-                            resource.questionsRemaining > 0 &&
-                            !assignments.map((a) => a.resourceId).includes(resource.id),
-                        );
+                        const resourceList = resources.filter((resource) => {
+                          const assigned = assignedCounts[resource.id] || 0;
+                          const remaining = resource.questionsRemaining - assigned;
+                          return resource.subject === subject && remaining > 0;
+                        });
 
                         if (!resourceList.length) return null;
 
@@ -131,11 +154,13 @@ export default function CreateAssignmentForm({ title, day = 0, children }: { tit
                             <SelectSeparator className="first:hidden" />
                             <SelectGroup>
                               <SelectLabel>{tSubject(subject)}</SelectLabel>
-                              {resourceList.map((resource) => (
-                                <SelectItem key={`assignment-item-${day}-${resource.id}`} value={resource.id}>
-                                  {resource.title}
-                                </SelectItem>
-                              ))}
+                              {resourceList.map((resource) => {
+                                return (
+                                  <SelectItem key={`assignment-item-${day}-${resource.id}`} value={resource.id}>
+                                    {resource.title}
+                                  </SelectItem>
+                                );
+                              })}
                             </SelectGroup>
                           </Fragment>
                         );
@@ -151,7 +176,8 @@ export default function CreateAssignmentForm({ title, day = 0, children }: { tit
               control={form.control}
               name="questionCount"
               render={({ field }) => {
-                const selectedResourceId = form.watch("resourceId");
+                const selected = resources.find(({ id }) => selectedResourceId === id);
+                const alreadyAssigned = assignedCounts[selectedResourceId] || 0;
                 const isDisabled = !selectedResourceId;
 
                 return (
@@ -160,7 +186,7 @@ export default function CreateAssignmentForm({ title, day = 0, children }: { tit
                     <FormControl>
                       <NumberInput
                         value={field.value}
-                        max={resources.find(({ id }) => selectedResourceId === id)?.questionsRemaining}
+                        max={selected ? selected.questionsRemaining - alreadyAssigned : undefined}
                         onValueChange={field.onChange}
                         disabled={isDisabled}
                         format="%d questions"

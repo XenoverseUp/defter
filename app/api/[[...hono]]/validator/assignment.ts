@@ -1,4 +1,4 @@
-import z from "zod";
+import z from "zod"
 
 const daySchema = z.object({
   day: z.number().int().min(0).max(6),
@@ -10,27 +10,31 @@ const daySchema = z.object({
       }),
     )
     .nonempty(),
-});
+})
 
 export const createAssignmentSchema = z
   .object({
     studentId: z.uuid(),
-    startsOn: z.coerce.date().refine((date) => date.getDay() === 1, { message: "Start date must be a Monday" }),
+    startsOn: z.coerce.date().refine((date) => date.getDay() === 1, {
+      message: "Start date must be a Monday",
+    }),
     days: z
       .array(daySchema)
       .nonempty({ message: "At least one day must be provided" })
       .refine(
         (days) => {
-          const dayNumbers = days.map((d) => d.day);
-          const uniqueDays = new Set(dayNumbers);
-          return uniqueDays.size === dayNumbers.length;
+          const dayNumbers = days.map((d) => d.day)
+          const uniqueDays = new Set(dayNumbers)
+          return uniqueDays.size === dayNumbers.length
         },
         { message: "Each day must be unique" },
       ),
   })
   .transform((data) => {
-    const resourceIds = data.days.flatMap((d) => d.assignments.map((a) => a.resourceId));
-    const resourceSet = new Set(resourceIds);
+    const resourceIds = data.days.flatMap((d) =>
+      d.assignments.map((a) => a.resourceId),
+    )
+    const resourceSet = new Set(resourceIds)
 
     if (resourceSet.size < 1) {
       throw new z.ZodError([
@@ -40,11 +44,11 @@ export const createAssignmentSchema = z
           code: "custom",
           input: data.days,
         },
-      ]);
+      ])
     }
 
     return {
       ...data,
       resourceSet,
-    };
-  });
+    }
+  })

@@ -1,9 +1,8 @@
-import { drizzle } from "drizzle-orm/neon-http"
-
 import { schema } from "./schema"
 import "@/db/relations"
 
-export const db = drizzle({
-  connection: process.env.DB_URL!,
-  schema,
-})
+import { Pool } from "pg"
+import { drizzle } from "drizzle-orm/node-postgres"
+
+const pool = new Pool({ connectionString: process.env.DB_URL })
+export const db = drizzle(pool, { schema })

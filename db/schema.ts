@@ -1,5 +1,14 @@
-import { sql } from "drizzle-orm";
-import { pgTable, text, timestamp, boolean, uuid, pgEnum, integer, check } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm"
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  uuid,
+  pgEnum,
+  integer,
+  check,
+} from "drizzle-orm/pg-core"
 
 export const assignment = pgTable("assignment", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -15,7 +24,7 @@ export const assignment = pgTable("assignment", {
 
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
-});
+})
 
 export const assignmentDay = pgTable("assignment_day", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -27,7 +36,7 @@ export const assignmentDay = pgTable("assignment_day", {
   day: integer().notNull(), // monday: 0 to sunday: 6
 
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-});
+})
 
 export const assignmentEntry = pgTable("assignment_entry", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -44,7 +53,7 @@ export const assignmentEntry = pgTable("assignment_entry", {
   solvedQuestions: integer("solved_questions").default(0).notNull(),
 
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-});
+})
 
 export const subjectEnum = pgEnum("subject", [
   // Middle School Only
@@ -63,7 +72,7 @@ export const subjectEnum = pgEnum("subject", [
   "turkish",
   "math",
   "english",
-]);
+])
 
 export const resource = pgTable(
   "student_resource",
@@ -91,11 +100,14 @@ export const resource = pgTable(
   ({ totalQuestions, questionsRemaining }) => [
     check("total_questions_non_negative", sql`${totalQuestions} > 0`),
     check("questions_remaining_non_negative", sql`${questionsRemaining} >= 0`),
-    check("questions_remaining_not_more_than_total", sql`${questionsRemaining} <= ${totalQuestions}`),
+    check(
+      "questions_remaining_not_more_than_total",
+      sql`${questionsRemaining} <= ${totalQuestions}`,
+    ),
   ],
-);
+)
 
-export const gradeEnum = pgEnum("grade", ["middle-school", "high-school"]);
+export const gradeEnum = pgEnum("grade", ["middle-school", "high-school"])
 
 export const student = pgTable("student", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -120,7 +132,7 @@ export const student = pgTable("student", {
   updatedAt: timestamp("updated_at")
     .$defaultFn(() => new Date())
     .notNull(),
-});
+})
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -136,7 +148,7 @@ export const user = pgTable("user", {
   updatedAt: timestamp("updated_at")
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
-});
+})
 
 export const session = pgTable("session", {
   id: text("id").primaryKey(),
@@ -149,7 +161,7 @@ export const session = pgTable("session", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-});
+})
 
 export const account = pgTable("account", {
   id: text("id").primaryKey(),
@@ -167,16 +179,20 @@ export const account = pgTable("account", {
   password: text("password"),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
-});
+})
 
 export const verification = pgTable("verification", {
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at").$defaultFn(() => /* @__PURE__ */ new Date()),
-  updatedAt: timestamp("updated_at").$defaultFn(() => /* @__PURE__ */ new Date()),
-});
+  createdAt: timestamp("created_at").$defaultFn(
+    () => /* @__PURE__ */ new Date(),
+  ),
+  updatedAt: timestamp("updated_at").$defaultFn(
+    () => /* @__PURE__ */ new Date(),
+  ),
+})
 
 export const schema = {
   assignment,
@@ -190,4 +206,4 @@ export const schema = {
   resource,
   gradeEnum,
   subjectEnum,
-};
+}

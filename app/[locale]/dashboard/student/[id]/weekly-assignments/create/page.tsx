@@ -3,6 +3,7 @@
 import AssignmentCalendar from "@/app/[locale]/dashboard/student/[id]/weekly-assignments/create/assignment-calendar"
 import { Button } from "@/components/ui/button"
 import { If } from "@/components/ui/if"
+import { useRouter } from "@/i18n/navigation"
 import { createAssignment } from "@/lib/client-services/assignments"
 
 import { cn, DateUtils } from "@/lib/utils"
@@ -35,6 +36,8 @@ const AssignmentContext = createContext<{
 
 function CreateAssignments() {
   const [loading, setLoading] = useState(false)
+
+  const router = useRouter()
 
   const { id: studentId } = useParams<{ id: string }>()
 
@@ -69,6 +72,8 @@ function CreateAssignments() {
       })
 
       toast.success("Assignment created successfully.")
+      router.push(`/dashboard/student/${studentId}/weekly-assignments`)
+      router.refresh()
     } catch {
       toast.error("Failed to create the assignment.")
     }

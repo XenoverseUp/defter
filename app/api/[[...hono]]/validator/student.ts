@@ -1,13 +1,13 @@
-import { gradeEnum } from "@/db/schema";
-import z from "zod";
+import { gradeEnum } from "@/db/schema"
+import z from "zod"
 
 export const deleteStudentsSchema = z.object({
   ids: z.array(z.uuid()),
-});
+})
 
 export const studentIdParamSchema = z.object({
-  id: z.uuid(),
-});
+  studentId: z.uuid(),
+})
 
 export const createStudentSchema = z.object({
   firstName: z.string().min(1),
@@ -17,10 +17,10 @@ export const createStudentSchema = z.object({
   city: z.string().optional().nullable(),
   phone: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
-});
+})
 
 export const patchStudentSchema = z.object({
   firstName: z.string().min(1).optional(),
   lastName: z.string().min(1).optional(),
   grade: z.enum(gradeEnum.enumValues).optional(),
-});
+})

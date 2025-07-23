@@ -1,5 +1,5 @@
-import { subjectEnum } from "@/db/schema";
-import z from "zod";
+import { subjectEnum } from "@/db/schema"
+import z from "zod"
 
 export const createResourceSchema = z
   .object({
@@ -12,8 +12,8 @@ export const createResourceSchema = z
   .refine((data) => data.questionsRemaining <= data.totalQuestions, {
     message: "Remaining questions cannot exceed total",
     path: ["questionsRemaining"],
-  });
+  })
 
 export const deleteResourceSchema = z.object({
-  id: z.uuid(),
-});
+  resourceId: z.uuid(),
+})

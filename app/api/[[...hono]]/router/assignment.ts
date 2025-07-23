@@ -7,6 +7,8 @@ import { and } from "drizzle-orm"
 import { Hono } from "hono"
 import { getAuth } from "../middleware/getAuth"
 import { createAssignmentSchema } from "../validator/assignment"
+import { requireOwnsStudent } from "../middleware/requireOwnsStudent"
+import { doesUserOwnStudent } from "@/lib/actions/students"
 
 export const assignmentRouter = new Hono()
   .use(getAuth)
@@ -14,14 +16,7 @@ export const assignmentRouter = new Hono()
     const { user } = c.var
     const { studentId, startsOn, days = [], resourceSet } = c.req.valid("json")
 
-    const foundStudent = await db.query.student.findFirst({
-      where: and(
-        eq(schema.student.id, studentId),
-        eq(schema.student.userId, user.id),
-      ),
-    })
-
-    if (!foundStudent)
+    if (!(await doesUserOwnStudent(user.id, studentId)))
       return c.json({ error: "Student not found or not yours" }, 403)
 
     const ownedResources = await db.query.resource.findMany({
@@ -85,3 +80,8 @@ export const assignmentRouter = new Hono()
 
     return c.json({ success: true }, 201)
   })
+
+  .get("/:studentId", requireOwnsStudent, async (c) => {
+    const { student } = c.var
+  })
+  .get("/:studentId/active", requireOwnsStudent, async (c) => {})

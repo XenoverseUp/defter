@@ -4,14 +4,14 @@ import { InferResponseType } from "hono"
 import { subjectEnum } from "@/db/schema"
 
 export type StudentResourceData = InferResponseType<
-  (typeof api.students)[":id"]["resources"]["$get"]
+  (typeof api.resources)[":studentId"]["$get"]
 >[number]
 
 export async function getStudentResources(
   studentId: UUID | string,
 ): Promise<StudentResourceData[]> {
-  const res = await api.students[":id"].resources.$get({
-    param: { id: studentId },
+  const res = await api.resources[":studentId"].$get({
+    param: { studentId },
   })
 
   if (!res.ok) throw new Error("Failed to fetch student resources")
@@ -29,8 +29,8 @@ export async function createStudentResource(
     questionsRemaining: number
   },
 ) {
-  const res = await api.students[":id"].resources.$post({
-    param: { id: studentId },
+  const res = await api.resources[":studentId"].$post({
+    param: { studentId },
     json,
   })
 
@@ -40,7 +40,9 @@ export async function createStudentResource(
 }
 
 export async function deleteStudentResource(resourceId: UUID | string) {
-  const res = await api.resources[":id"].$delete({ param: { id: resourceId } })
+  const res = await api.resources[":resourceId"].$delete({
+    param: { resourceId },
+  })
 
   if (!res.ok) throw new Error("Failed to delete resource")
 

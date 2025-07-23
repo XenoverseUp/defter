@@ -1,48 +1,52 @@
-import { api } from "./hono-client";
-import type { InferResponseType } from "hono";
+import { api } from "./hono-client"
+import type { InferResponseType } from "hono"
 
-export type StudentData = InferResponseType<typeof api.students.$get>[number];
+export type StudentData = InferResponseType<typeof api.students.$get>[number]
 
 export async function getStudents() {
-  const res = await api.students.$get();
+  const res = await api.students.$get()
 
-  if (!res.ok) throw new Error("Failed to get students");
+  if (!res.ok) throw new Error("Failed to get students")
 
-  return res.json();
+  return res.json()
 }
 
 export async function getStudentProfile(studentId: string) {
-  const res = await api.students[":id"].$get({
+  const res = await api.students[":studentId"].$get({
     param: {
-      id: studentId,
+      studentId: studentId,
     },
-  });
+  })
 
-  if (!res.ok) throw new Error("Failed to get students");
+  if (!res.ok) throw new Error("Failed to get students")
 
-  return res.json();
+  return res.json()
 }
 
-export async function createStudent(json: Omit<StudentData, "id" | "userId" | "createdAt" | "updatedAt">) {
-  const res = await api.students.$post({ json });
+export async function createStudent(
+  json: Omit<StudentData, "id" | "userId" | "createdAt" | "updatedAt">,
+) {
+  const res = await api.students.$post({ json })
 
-  if (!res.ok) throw new Error("Failed to create student");
+  if (!res.ok) throw new Error("Failed to create student")
 
-  return res.json();
+  return res.json()
 }
 
 export const deleteStudents = async (ids: string[]) => {
-  const res = await api.students.$delete({ json: { ids } });
+  const res = await api.students.$delete({ json: { ids } })
 
-  if (!res.ok) throw new Error("Failed to delete students");
+  if (!res.ok) throw new Error("Failed to delete students")
 
-  return res.json();
-};
+  return res.json()
+}
 
 export const deleteStudent = async (id: string) => {
-  const res = await api.students[":id"].$delete({ param: { id } });
+  const res = await api.students[":studentId"].$delete({
+    param: { studentId: id },
+  })
 
-  if (!res.ok) throw new Error("Failed to delete students");
+  if (!res.ok) throw new Error("Failed to delete students")
 
-  return res.json();
-};
+  return res.json()
+}

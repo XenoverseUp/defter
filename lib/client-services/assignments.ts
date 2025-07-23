@@ -1,5 +1,4 @@
 import { api } from "./hono-client"
-import { InferResponseType } from "hono"
 
 export async function createAssignment(
   studentId: string,
@@ -21,7 +20,7 @@ export async function createAssignment(
     },
   })
 
-  if (!res.ok) throw new Error("Failed to fetch student resources")
+  if (!res.ok) throw new Error("Failed to create weekly assignment.")
 
   return res.json()
 }

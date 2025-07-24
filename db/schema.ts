@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm"
+import { relations, sql } from "drizzle-orm"
 import {
   pgTable,
   text,
@@ -194,7 +194,19 @@ export const verification = pgTable("verification", {
   ),
 })
 
+// Relations
+
+export const assignmentRelations = relations(assignment, ({ many }) => ({
+  days: many(assignmentDay),
+}))
+
+export const assignmentDayRelations = relations(assignmentDay, ({ many }) => ({
+  entries: many(assignmentEntry),
+}))
+
 export const schema = {
+  assignmentDayRelations,
+  assignmentRelations,
   assignment,
   assignmentDay,
   assignmentEntry,

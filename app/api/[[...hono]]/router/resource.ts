@@ -12,12 +12,13 @@ import { doesUserOwnStudent } from "@/lib/actions/students"
 import { getStudentResources } from "@/lib/actions/resources"
 import { requireOwnsStudent } from "../middleware/requireOwnsStudent"
 import { studentIdParamSchema } from "../validator/student"
+import { Regex } from "../validator/utils"
 
 export const resourceRouter = new Hono()
   .use(getAuth)
 
   .get(
-    "/:studentId",
+    `/:studentId{${Regex.uuid}}`,
     zValidator("param", studentIdParamSchema),
     requireOwnsStudent,
     async (c) => {
@@ -29,7 +30,7 @@ export const resourceRouter = new Hono()
   )
 
   .post(
-    "/:studentId",
+    `/:studentId{${Regex.uuid}}`,
     zValidator("param", studentIdParamSchema),
     requireOwnsStudent,
     zValidator("json", createResourceSchema),
@@ -52,7 +53,7 @@ export const resourceRouter = new Hono()
   )
 
   .delete(
-    "/:resourceId",
+    `/:resourceId{${Regex.uuid}}`,
     zValidator("param", deleteResourceSchema),
     async (c) => {
       const { user } = c.var

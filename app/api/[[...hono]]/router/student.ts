@@ -13,6 +13,7 @@ import {
 } from "../validator/student"
 
 import { requireOwnsStudent } from "../middleware/requireOwnsStudent"
+import { Regex } from "../validator/utils"
 
 export const studentRouter = new Hono()
   .use(getAuth)
@@ -65,7 +66,7 @@ export const studentRouter = new Hono()
   })
 
   .get(
-    "/:studentId",
+    `/:studentId{${Regex.uuid}}`,
     zValidator("param", studentIdParamSchema),
     requireOwnsStudent,
     async (c) => {
@@ -85,7 +86,7 @@ export const studentRouter = new Hono()
   )
 
   .delete(
-    "/:studentId",
+    `/:studentId{${Regex.uuid}}`,
     zValidator("param", studentIdParamSchema),
     requireOwnsStudent,
     async (c) => {
@@ -105,7 +106,7 @@ export const studentRouter = new Hono()
   )
 
   .patch(
-    "/:studentId",
+    `/:studentId{${Regex.uuid}}`,
     zValidator("param", studentIdParamSchema),
     requireOwnsStudent,
     zValidator("json", patchStudentSchema),

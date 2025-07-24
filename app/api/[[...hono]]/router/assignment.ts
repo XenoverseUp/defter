@@ -1,6 +1,6 @@
 import * as schema from "@/db/schema"
 import { zValidator } from "@hono/zod-validator"
-import { eq, inArray } from "drizzle-orm"
+import { eq, inArray, sql } from "drizzle-orm"
 
 import { db } from "@/db"
 import { and } from "drizzle-orm"
@@ -9,6 +9,8 @@ import { getAuth } from "../middleware/getAuth"
 import { createAssignmentSchema } from "../validator/assignment"
 import { requireOwnsStudent } from "../middleware/requireOwnsStudent"
 import { doesUserOwnStudent } from "@/lib/actions/students"
+import { Regex } from "../validator/utils"
+import { studentIdParamSchema } from "../validator/student"
 
 export const assignmentRouter = new Hono()
   .use(getAuth)
@@ -81,7 +83,82 @@ export const assignmentRouter = new Hono()
     return c.json({ success: true }, 201)
   })
 
-  .get("/:studentId", requireOwnsStudent, async (c) => {
-    const { student } = c.var
-  })
-  .get("/:studentId/active", requireOwnsStudent, async (c) => {})
+  // Assignments Metadata
+  .get(
+    `/:studentId{${Regex.uuid}}`,
+    zValidator("param", studentIdParamSchema),
+    requireOwnsStudent,
+    async (c) => {
+      const { student } = c.var
+
+      const assignments = await db
+        .select({
+          id: schema.assignment.id,
+          startsOn: schema.assignment.startsOn,
+          validated: schema.assignment.isValidated,
+          totalAssigned:
+            sql<number>`COALESCE(SUM(${schema.assignmentEntry.assignedQuestions}), 0)`.as(
+              "totalAssigned",
+            ),
+          totalSolved:
+            sql<number>`COALESCE(SUM(${schema.assignmentEntry.solvedQuestions}), 0)`.as(
+              "totalSolved",
+            ),
+          entryCount: sql<number>`COUNT(${schema.assignmentEntry.id})`.as(
+            "entryCount",
+          ),
+        })
+        .from(schema.assignment)
+        .leftJoin(
+          schema.assignmentDay,
+          eq(schema.assignmentDay.assignmentId, schema.assignment.id),
+        )
+        .leftJoin(
+          schema.assignmentEntry,
+          eq(schema.assignmentEntry.assignmentDayId, schema.assignmentDay.id),
+        )
+        .where(
+          and(
+            eq(schema.assignment.studentId, student.id),
+            eq(schema.assignment.active, false),
+          ),
+        )
+        .groupBy(
+          schema.assignment.id,
+          schema.assignment.startsOn,
+          schema.assignment.isValidated,
+        )
+
+      return c.json({ success: true, data: assignments })
+    },
+  )
+
+  // Active Assignment Data
+  .get(
+    `/:studentId{${Regex.uuid}}/active`,
+    zValidator("param", studentIdParamSchema),
+    requireOwnsStudent,
+    async (c) => {
+      const { student } = c.var
+
+      const activeAssignment = await db.query.assignment.findFirst({
+        where: and(
+          eq(schema.assignment.studentId, student.id),
+          eq(schema.assignment.active, true),
+        ),
+        columns: { studentId: false },
+        with: {
+          days: {
+            with: {
+              entries: true,
+            },
+          },
+        },
+      })
+
+      return c.json({ success: true, data: activeAssignment })
+    },
+  )
+
+  // Single Assignment Data
+  .get("/:studentId/:assignmentId")

@@ -16,8 +16,6 @@ export async function getActiveAssignment(studentId: string) {
 
   const json = await res.json()
 
-  console.log(json)
-
   return json?.data
 }
 

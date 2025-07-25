@@ -5,7 +5,10 @@ import { Button } from "@/components/ui/button"
 import { If } from "@/components/ui/if"
 import { useRouter } from "@/i18n/navigation"
 import { createAssignment } from "@/lib/client-services/assignments"
-import { mutateActiveAssignment } from "@/lib/hooks/useActiveAssignment"
+import {
+  mutateActiveAssignment,
+  useActiveAssignment,
+} from "@/lib/hooks/useActiveAssignment"
 
 import { cn, DateUtils } from "@/lib/utils"
 
@@ -15,6 +18,7 @@ import {
   createContext,
   Dispatch,
   SetStateAction,
+  useEffect,
   useMemo,
   useState,
 } from "react"
@@ -50,6 +54,15 @@ function CreateAssignments() {
         .reduce((a, b) => a + b, 0),
     [assignments],
   )
+
+  const { activeAssignment, isLoading } = useActiveAssignment({
+    id: studentId,
+  })
+
+  useEffect(() => {
+    if (!isLoading && activeAssignment)
+      router.replace(`/dashboard/student/${studentId}/weekly-assignments`)
+  }, [activeAssignment, isLoading, router, studentId])
 
   async function onSubmit() {
     setLoading(true)

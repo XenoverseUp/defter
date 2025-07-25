@@ -20,7 +20,10 @@ export async function createAssignment(
     },
   })
 
-  if (!res.ok) throw new Error("Failed to create weekly assignment.")
+  const json = await res.json()
 
-  return res.json()
+  // @ts-ignore
+  if (!res.ok) throw new Error(json.error ?? "Failed to create assignment.")
+
+  return json
 }

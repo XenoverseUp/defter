@@ -14,21 +14,26 @@ type Env = {
 }
 
 export const requireOwnsStudent = createMiddleware<Env>(async (c, next) => {
-  const { studentId } = studentIdParamSchema.parse(c.req.param())
+  try {
+    const { studentId } = studentIdParamSchema.parse(c.req.param())
 
-  const user = c.var.user
-  if (!user) return c.json({ error: "Unauthorized" }, 401)
+    const user = c.var.user
+    if (!user) return c.json({ error: "Unauthorized" }, 401)
 
-  const ownedStudent = await db.query.student.findFirst({
-    where: (s, { eq }) => eq(s.id, studentId),
-  })
+    const ownedStudent = await db.query.student.findFirst({
+      where: (s, { eq }) => eq(s.id, studentId),
+    })
 
-  if (!ownedStudent) return c.notFound()
+    if (!ownedStudent) return c.notFound()
 
-  if (ownedStudent.userId !== user.id)
-    return c.json({ error: "Forbidden" }, 403)
+    if (ownedStudent.userId !== user.id)
+      return c.json({ error: "Forbidden" }, 403)
 
-  c.set("student", ownedStudent)
+    c.set("student", ownedStudent)
 
-  await next()
+    return await next()
+  } catch (err) {
+    console.error("requireOwnsStudent error", err)
+    return c.json({ error: "Bad Request" }, 400)
+  }
 })

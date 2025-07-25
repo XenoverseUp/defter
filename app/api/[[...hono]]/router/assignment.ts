@@ -21,6 +21,24 @@ export const assignmentRouter = new Hono()
     if (!(await doesUserOwnStudent(user.id, studentId)))
       return c.json({ error: "Student not found or not yours" }, 403)
 
+    const hasActive = await db
+      .select({ id: schema.assignment.id })
+      .from(schema.assignment)
+      .where(
+        and(
+          eq(schema.assignment.studentId, studentId),
+          eq(schema.assignment.active, true),
+        ),
+      )
+
+    if (hasActive.length > 0)
+      return c.json(
+        {
+          error: "Student already has an active assignment. Validate first.",
+        },
+        400,
+      )
+
     const ownedResources = await db.query.resource.findMany({
       where: and(
         inArray(schema.resource.id, Array.from(resourceSet)),
@@ -41,16 +59,6 @@ export const assignmentRouter = new Hono()
       )
 
     await db.transaction(async (tx) => {
-      await tx
-        .update(schema.assignment)
-        .set({ active: false })
-        .where(
-          and(
-            eq(schema.assignment.studentId, studentId),
-            eq(schema.assignment.active, true),
-          ),
-        )
-
       const [assignment] = await tx
         .insert(schema.assignment)
         .values({
@@ -160,5 +168,5 @@ export const assignmentRouter = new Hono()
     },
   )
 
-  // Single Assignment Data
-  .get("/:studentId/:assignmentId")
+// Single Assignment Data
+// .get("/:studentId/:assignmentId")

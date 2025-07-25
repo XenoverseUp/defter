@@ -74,8 +74,9 @@ function CreateAssignments() {
       toast.success("Assignment created successfully.")
       router.push(`/dashboard/student/${studentId}/weekly-assignments`)
       router.refresh()
-    } catch {
-      toast.error("Failed to create the assignment.")
+    } catch (err) {
+      const e = err as Error
+      toast.error(e.message ?? "Failed to create the assignment.")
     }
     setLoading(false)
   }
@@ -85,7 +86,6 @@ function CreateAssignments() {
       <header className="flex px-6 items-center gap-4">
         <div>
           <h2 className="text-lg font-medium flex items-center gap-1.5">
-            {/* <PencilRulerIcon className="size-5" strokeWidth={1.5} /> */}
             Weekly Schedule
           </h2>
         </div>

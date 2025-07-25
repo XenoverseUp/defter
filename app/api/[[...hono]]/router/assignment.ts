@@ -9,7 +9,7 @@ import { getAuth } from "../middleware/getAuth"
 import { createAssignmentSchema } from "../validator/assignment"
 import { requireOwnsStudent } from "../middleware/requireOwnsStudent"
 import { doesUserOwnStudent } from "@/lib/actions/students"
-import { Regex } from "../validator/utils"
+
 import { studentIdParamSchema } from "../validator/student"
 
 export const assignmentRouter = new Hono()
@@ -93,7 +93,7 @@ export const assignmentRouter = new Hono()
 
   // Assignments Metadata
   .get(
-    `/:studentId{${Regex.uuid}}`,
+    `/:studentId`,
     zValidator("param", studentIdParamSchema),
     requireOwnsStudent,
     async (c) => {
@@ -143,7 +143,7 @@ export const assignmentRouter = new Hono()
 
   // Active Assignment Data
   .get(
-    `/:studentId{${Regex.uuid}}/active`,
+    `/:studentId/active`,
     zValidator("param", studentIdParamSchema),
     requireOwnsStudent,
     async (c) => {

@@ -4,25 +4,17 @@ import { useParams } from "next/navigation"
 import { ReactNode, useContext } from "react"
 import { Assignment, AssignmentContext } from "./page"
 import CreateAssignmentForm from "./create-assignment-form"
+import { StudentUtils } from "@/lib/utils"
 
-import {
-  AtomIcon,
-  BookTypeIcon,
-  ConeIcon,
-  FlaskConicalIcon,
-  LanguagesIcon,
-  LeafIcon,
-  MapIcon,
-  PersonStandingIcon,
-  PiIcon,
-  SwordsIcon,
-  XIcon,
-} from "lucide-react"
+import { XIcon } from "lucide-react"
 import AssignmentCalendarSkeleton from "./assignment-calendar-skeleton"
 import { useTranslations } from "next-intl"
-import { subjectEnum } from "@/db/schema"
 
-export default function AssignmentCalendar() {
+interface Props {
+  form?: boolean
+}
+
+export default function AssignmentCalendar({ form = false }: Props) {
   const { id } = useParams<{ id: string }>()
   const { assignments } = useContext(AssignmentContext)
 
@@ -121,6 +113,8 @@ function Entry({ item }: { item: Assignment }) {
     content: "bg-muted/50",
   }
 
+  const Icon = StudentUtils.subjectIcon(resource.subject)
+
   return (
     <div
       className={cn(
@@ -133,11 +127,7 @@ function Entry({ item }: { item: Assignment }) {
       <div className="flex flex-col h-full divide-y divide-inherit transition-opacity group-hover:opacity-0 select-none pointer-events-none">
         <header className="px-2 pb-2 pt-1.5">
           <span className="text-xs font-semibold line-clamp-1 mb-1.5 flex items-center gap-1">
-            {
-              subjectIconMap[
-                resource.subject as (typeof subjectEnum.enumValues)[number]
-              ]
-            }
+            <Icon size={12} />
             {tSubject(resource.subject)}
           </span>
           <h3 className="text-xs font-medium whitespace-nowrap text-ellipsis line-clamp-1">
@@ -247,21 +237,4 @@ const subjectColors: Record<
     content: "bg-gray-200/50",
     border: "border-gray-600/25 divide-gray-600/25",
   },
-}
-
-const subjectIconMap: Record<
-  (typeof subjectEnum.enumValues)[number],
-  ReactNode
-> = {
-  turkish: <BookTypeIcon size={12} />,
-  english: <LanguagesIcon size={12} />,
-  math: <PiIcon size={12} />,
-  "social-studies": <PersonStandingIcon size={12} />,
-  science: <FlaskConicalIcon size={12} />,
-  geometry: <ConeIcon size={12} />,
-  physics: <AtomIcon size={12} />,
-  chemistry: <FlaskConicalIcon size={12} />,
-  biology: <LeafIcon size={12} />,
-  history: <SwordsIcon size={12} />,
-  geography: <MapIcon size={12} />,
 }

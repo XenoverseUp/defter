@@ -2,6 +2,7 @@ import { UUID } from "crypto"
 import { api } from "./hono-client"
 import { InferResponseType } from "hono"
 import { subjectEnum } from "@/db/schema"
+import { StudentUtils } from "../utils"
 
 export type StudentResourceData = InferResponseType<
   (typeof api.resources)[":studentId"]["$get"]
@@ -23,7 +24,7 @@ export async function createStudentResource(
   studentId: UUID | string,
   json: {
     title: string
-    subject: (typeof subjectEnum.enumValues)[number]
+    subject: StudentUtils.Subject
     press: string
     totalQuestions: number
     questionsRemaining: number

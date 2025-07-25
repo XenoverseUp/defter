@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { If } from "@/components/ui/if"
 import { useRouter } from "@/i18n/navigation"
 import { createAssignment } from "@/lib/client-services/assignments"
+import { mutateActiveAssignment } from "@/lib/hooks/useActiveAssignment"
 
 import { cn, DateUtils } from "@/lib/utils"
 
@@ -64,12 +65,12 @@ function CreateAssignments() {
         }, {}),
       )
 
-      // Use student Assignments hook with swr mutation
-
       await createAssignment(studentId, {
         startsOn: DateUtils.getStartOfTheWeek(),
         days: groupedByDay,
       })
+
+      await mutateActiveAssignment(studentId)
 
       toast.success("Assignment created successfully.")
       router.push(`/dashboard/student/${studentId}/weekly-assignments`)

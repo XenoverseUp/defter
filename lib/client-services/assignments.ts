@@ -1,4 +1,35 @@
+import { InferResponseType } from "hono"
 import { api } from "./hono-client"
+
+export type ActiveAssignmentData = InferResponseType<
+  (typeof api.assignments)[":studentId"]["active"]["$get"]
+>["data"]
+
+export type PastAssignmentData = InferResponseType<
+  (typeof api.assignments)[":studentId"]["$get"]
+>["data"]
+
+export async function getActiveAssignment(studentId: string) {
+  const res = await api.assignments[":studentId"].active.$get({
+    param: { studentId },
+  })
+
+  const json = await res.json()
+
+  console.log(json)
+
+  return json?.data
+}
+
+export async function getPastAssignments(studentId: string) {
+  const res = await api.assignments[":studentId"].$get({
+    param: { studentId },
+  })
+
+  const json = await res.json()
+
+  return json?.data
+}
 
 export async function createAssignment(
   studentId: string,

@@ -10,6 +10,8 @@ import {
   check,
 } from "drizzle-orm/pg-core"
 
+/*==== Tables ====*/
+
 export const assignment = pgTable("assignment", {
   id: uuid("id").primaryKey().defaultRandom(),
 
@@ -194,19 +196,42 @@ export const verification = pgTable("verification", {
   ),
 })
 
-// Relations
+/*==== Relations ====*/
 
 export const assignmentRelations = relations(assignment, ({ many }) => ({
   days: many(assignmentDay),
 }))
 
-export const assignmentDayRelations = relations(assignmentDay, ({ many }) => ({
-  entries: many(assignmentEntry),
-}))
+export const assignmentDayRelations = relations(
+  assignmentDay,
+  ({ one, many }) => ({
+    assignment: one(assignment, {
+      fields: [assignmentDay.assignmentId],
+      references: [assignment.id],
+    }),
+    entries: many(assignmentEntry),
+  }),
+)
+
+export const assignmentEntryRelations = relations(
+  assignmentEntry,
+  ({ one }) => ({
+    assignmentDay: one(assignmentDay, {
+      fields: [assignmentEntry.assignmentDayId],
+      references: [assignmentDay.id],
+    }),
+  }),
+)
 
 export const schema = {
+  /*==== Relations ====*/
+
   assignmentDayRelations,
   assignmentRelations,
+  assignmentEntryRelations,
+
+  /*==== Tables ====*/
+
   assignment,
   assignmentDay,
   assignmentEntry,

@@ -1,5 +1,4 @@
 import { schema } from "./schema"
-import "@/db/relations"
 
 import { Pool } from "pg"
 import { drizzle } from "drizzle-orm/node-postgres"

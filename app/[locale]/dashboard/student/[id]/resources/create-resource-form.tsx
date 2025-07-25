@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   Dialog,
@@ -8,46 +8,48 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
+import { NotebookIcon, PlusCircleIcon } from "lucide-react"
+
+import { toast } from "sonner"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+
+import { Button } from "@/components/ui/button"
 import {
-  AtomIcon,
-  BookTypeIcon,
-  ConeIcon,
-  DivideIcon,
-  FlaskConicalIcon,
-  LanguagesIcon,
-  LeafIcon,
-  MapIcon,
-  NotebookIcon,
-  PersonStandingIcon,
-  PiIcon,
-  PlusCircleIcon,
-  SwordsIcon,
-} from "lucide-react";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Input, NumberInput } from "@/components/ui/input"
+import { If } from "@/components/ui/if"
+import { subjectEnum } from "@/db/schema"
 
-import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useState } from "react"
+import { createStudentResource } from "@/lib/client-services/resources"
+import type { UUID } from "crypto"
+import { mutateStudentResources } from "@/lib/hooks/useResources"
 
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input, NumberInput } from "@/components/ui/input";
-import { If } from "@/components/ui/if";
-import { subjectEnum } from "@/db/schema";
-
-import { useState } from "react";
-import { createStudentResource } from "@/lib/client-services/resources";
-import type { UUID } from "crypto";
-import { mutateStudentResources } from "@/lib/hooks/useResources";
-
-import { useTranslations } from "next-intl";
+import { useTranslations } from "next-intl"
+import { StudentUtils } from "@/lib/utils"
 
 const formSchema = z
   .object({
     title: z.string().trim().min(1),
-    subject: z.enum(subjectEnum.enumValues, { message: "Please provide a subject." }),
+    subject: z.enum(subjectEnum.enumValues, {
+      message: "Please provide a subject.",
+    }),
     press: z.string().trim().min(1),
     totalQuestions: z.number().int().positive(),
     questionsRemaining: z.number().int().nonnegative(),
@@ -55,15 +57,15 @@ const formSchema = z
   .refine((data) => data.questionsRemaining <= data.totalQuestions, {
     message: "Remaining questions cannot exceed total.",
     path: ["questionsRemaining"],
-  });
+  })
 
 interface Props {
-  grade: "middle-school" | "high-school";
-  studentId: UUID | string;
+  grade: StudentUtils.Grade
+  studentId: UUID | string
 }
 
 export default function CreateResource({ grade, studentId }: Props) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -79,18 +81,24 @@ export default function CreateResource({ grade, studentId }: Props) {
             <NotebookIcon className="size-6" />
             Create Resource
           </DialogTitle>
-          <DialogDescription>Create resource in student profile to track their progress.</DialogDescription>
+          <DialogDescription>
+            Create resource in student profile to track their progress.
+          </DialogDescription>
         </DialogHeader>
 
         <CreateResourceForm {...{ grade, studentId, setOpen }} />
       </DialogContent>
     </Dialog>
-  );
+  )
 }
 
-function CreateResourceForm({ grade, studentId, setOpen }: Props & { setOpen: (v: boolean) => void }) {
-  const [loading, setLoading] = useState(false);
-  const tSubject = useTranslations("subject");
+function CreateResourceForm({
+  grade,
+  studentId,
+  setOpen,
+}: Props & { setOpen: (v: boolean) => void }) {
+  const [loading, setLoading] = useState(false)
+  const tSubject = useTranslations("subject")
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -100,22 +108,22 @@ function CreateResourceForm({ grade, studentId, setOpen }: Props & { setOpen: (v
       totalQuestions: 0,
       questionsRemaining: 0,
     },
-  });
+  })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setLoading(true);
+    setLoading(true)
     try {
       await mutateStudentResources(studentId, async (current = []) => {
-        const created = await createStudentResource(studentId, values);
-        return [created.resource, ...current];
-      });
+        const created = await createStudentResource(studentId, values)
+        return [created.resource, ...current]
+      })
 
-      toast.success("Resource created successfully.");
-      setOpen(false);
+      toast.success("Resource created successfully.")
+      setOpen(false)
     } catch (error) {
-      const e = error as Error;
-      toast.error(e.message ?? "Failed to submit the form.");
-      setLoading(false);
+      const e = error as Error
+      toast.error(e.message ?? "Failed to submit the form.")
+      setLoading(false)
     }
   }
 
@@ -135,59 +143,65 @@ function CreateResourceForm({ grade, studentId, setOpen }: Props & { setOpen: (v
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="turkish">
-                    <BookTypeIcon />
-                    {tSubject("turkish")}
-                  </SelectItem>
-                  <SelectItem value="english">
-                    <LanguagesIcon />
-                    {tSubject("english")}
-                  </SelectItem>
-                  <SelectItem value="math">
-                    <If condition={grade === "high-school"} renderItem={() => <PiIcon />} renderElse={() => <DivideIcon />} />
-                    {tSubject("math")}
-                  </SelectItem>
+                  {(
+                    [
+                      "turkish",
+                      "english",
+                      "math",
+                    ] satisfies StudentUtils.Subject[]
+                  ).map((subject) => {
+                    const Icon = StudentUtils.subjectIcon(subject)
+
+                    return (
+                      <SelectItem value={subject} key={subject}>
+                        <Icon />
+                        {tSubject(subject)}
+                      </SelectItem>
+                    )
+                  })}
 
                   <If
                     condition={grade === "middle-school"}
                     renderItem={() => (
                       <>
-                        <SelectItem value="social-studies">
-                          <PersonStandingIcon />
-                          {tSubject("social-studies")}
-                        </SelectItem>
-                        <SelectItem value="science">
-                          <FlaskConicalIcon />
-                          {tSubject("science")}
-                        </SelectItem>
+                        {(
+                          [
+                            "social-studies",
+                            "science",
+                          ] satisfies StudentUtils.Subject[]
+                        ).map((subject) => {
+                          const Icon = StudentUtils.subjectIcon(subject)
+
+                          return (
+                            <SelectItem value={subject} key={subject}>
+                              <Icon />
+                              {tSubject(subject)}
+                            </SelectItem>
+                          )
+                        })}
                       </>
                     )}
                     renderElse={() => (
                       <>
-                        <SelectItem value="geometry">
-                          <ConeIcon />
-                          {tSubject("geometry")}
-                        </SelectItem>
-                        <SelectItem value="physics">
-                          <AtomIcon />
-                          {tSubject("physics")}
-                        </SelectItem>
-                        <SelectItem value="chemistry">
-                          <FlaskConicalIcon />
-                          {tSubject("chemistry")}
-                        </SelectItem>
-                        <SelectItem value="biology">
-                          <LeafIcon />
-                          {tSubject("biology")}
-                        </SelectItem>
-                        <SelectItem value="history">
-                          <SwordsIcon />
-                          {tSubject("history")}
-                        </SelectItem>
-                        <SelectItem value="geography">
-                          <MapIcon />
-                          {tSubject("geography")}
-                        </SelectItem>
+                        {(
+                          [
+                            "geometry",
+                            "physics",
+                            "chemistry",
+                            "biology",
+                            "history",
+                            "geography",
+                          ] satisfies StudentUtils.Subject[]
+                        ).map((subject) => {
+                          const Icon = StudentUtils.subjectIcon(subject)
+
+                          return (
+                            <SelectItem value={subject} key={subject}>
+                              <Icon />
+                              {tSubject(subject)}
+                            </SelectItem>
+                          )
+                        })}
                       </>
                     )}
                   />
@@ -208,7 +222,11 @@ function CreateResourceForm({ grade, studentId, setOpen }: Props & { setOpen: (v
                 <FormItem>
                   <FormLabel>Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Petrucci Chemistry" type="text" {...field} />
+                    <Input
+                      placeholder="Petrucci Chemistry"
+                      type="text"
+                      {...field}
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -244,7 +262,11 @@ function CreateResourceForm({ grade, studentId, setOpen }: Props & { setOpen: (v
                 <FormItem>
                   <FormLabel>Total Questions</FormLabel>
                   <FormControl>
-                    <NumberInput value={value} onValueChange={onChange} placeholder="500" />
+                    <NumberInput
+                      value={value}
+                      onValueChange={onChange}
+                      placeholder="500"
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -261,7 +283,11 @@ function CreateResourceForm({ grade, studentId, setOpen }: Props & { setOpen: (v
                 <FormItem>
                   <FormLabel>Remaining Questions</FormLabel>
                   <FormControl>
-                    <NumberInput value={value} onValueChange={onChange} placeholder="300" />
+                    <NumberInput
+                      value={value}
+                      onValueChange={onChange}
+                      placeholder="300"
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -278,10 +304,14 @@ function CreateResourceForm({ grade, studentId, setOpen }: Props & { setOpen: (v
           </DialogClose>
           <Button type="submit" disabled={loading}>
             <PlusCircleIcon />
-            <If condition={loading} renderItem={() => "Creating..."} renderElse={() => "Create Resource"} />
+            <If
+              condition={loading}
+              renderItem={() => "Creating..."}
+              renderElse={() => "Create Resource"}
+            />
           </Button>
         </div>
       </form>
     </Form>
-  );
+  )
 }

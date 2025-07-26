@@ -23,7 +23,7 @@ export function useActiveAssignment({ id, fallbackData }: Params) {
 
   return {
     activeAssignment: swr.data,
-    isLoading: swr.isLoading,
+    isActiveAssignmentLoading: swr.isLoading,
     isValidating: swr.isValidating,
     error: swr.error,
     key,

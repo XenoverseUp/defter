@@ -1,47 +1,86 @@
-import { cn, DateUtils } from "@/lib/utils"
 import { useStudentResources } from "@/lib/hooks/useResources"
+import { cn, DateUtils } from "@/lib/utils"
 import { useParams } from "next/navigation"
-import { ReactNode, useContext } from "react"
-import { Assignment, AssignmentContext } from "./page"
-import CreateAssignmentForm from "./create-assignment-form"
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useContext,
+} from "react"
+
 import { StudentUtils } from "@/lib/utils"
+import CreateAssignmentForm from "./create/create-assignment-form"
 
+import { If, IfValue } from "@/components/ui/if"
 import { XIcon } from "lucide-react"
-import AssignmentCalendarSkeleton from "./assignment-calendar-skeleton"
 import { useTranslations } from "next-intl"
+import AssignmentCalendarSkeleton from "./assignment-calendar-skeleton"
+import { Assignment } from "./page"
 
-interface Props {
-  form?: boolean
-}
+export const AssignmentContext = createContext<{
+  assignments: Assignment[]
+  setAssignments?: Dispatch<SetStateAction<Assignment[]>>
+}>({
+  assignments: [],
+  setAssignments: () => {},
+})
 
-export default function AssignmentCalendar({ form = false }: Props) {
+type Props =
+  | {
+      form?: true
+      assignments: Assignment[]
+      setAssignments: Dispatch<SetStateAction<Assignment[]>>
+    }
+  | {
+      form?: false
+      assignments: Assignment[]
+      startsOn: Date
+    }
+
+export default function AssignmentCalendar(props: Props) {
   const { id } = useParams<{ id: string }>()
-  const { assignments } = useContext(AssignmentContext)
 
   const { isLoading } = useStudentResources({ id })
 
-  if (isLoading) return <AssignmentCalendarSkeleton />
+  if (props.form && isLoading) return <AssignmentCalendarSkeleton />
+
+  const contextValue = {
+    assignments: props.assignments,
+    setAssignments: props.form ? props.setAssignments : undefined,
+  }
 
   return (
-    <div className="w-full min-h-90 grid grid-cols-7 grid-rows-1 rounded-lg divide-x border">
-      {DateUtils.getCurrentWeekdates().map((date, i) => (
-        <DayView
-          key={`day-view-${i}`}
-          index={i}
-          date={date}
-          items={assignments.filter(({ day }) => day === i)}
-        >
-          <CreateAssignmentForm
-            title={DateUtils.format(date, {
-              day: "numeric",
-              weekday: "long",
-              year: "numeric",
-            })}
-            day={i}
-          />
-        </DayView>
-      ))}
-    </div>
+    <AssignmentContext.Provider value={contextValue}>
+      <div className="w-full min-h-90 grid grid-cols-7 grid-rows-1 rounded-lg divide-x border">
+        {(props.form
+          ? DateUtils.getCurrentWeekdates()
+          : // @ts-expect-error couldn't infer the type
+            DateUtils.getWeekdates(props.startsOn)
+        ).map((date, i) => (
+          <DayView
+            key={`day-view-${i}`}
+            index={i}
+            date={date}
+            items={props.assignments.filter(({ day }) => day === i)}
+          >
+            <If
+              condition={!!props.form}
+              renderItem={() => (
+                <CreateAssignmentForm
+                  title={DateUtils.format(date, {
+                    day: "numeric",
+                    weekday: "long",
+                    year: "numeric",
+                  })}
+                  day={i}
+                />
+              )}
+            />
+          </DayView>
+        ))}
+      </div>
+    </AssignmentContext.Provider>
   )
 }
 
@@ -101,16 +140,16 @@ function Entry({ item }: { item: Assignment }) {
   const tSubject = useTranslations("subject")
 
   const { data } = useStudentResources({ id })
-  const resource = data!.find(({ id }) => id === item.resourceId)
-
   const { setAssignments } = useContext(AssignmentContext)
 
-  if (!resource) return
+  const resource = data?.find(({ id }) => id === item.resourceId)
+  if (!resource) return null
 
   const color = subjectColors[resource.subject] ?? {
     bg: "bg-muted",
     text: "text-foreground",
     content: "bg-muted/50",
+    border: "",
   }
 
   const Icon = StudentUtils.subjectIcon(resource.subject)
@@ -124,7 +163,14 @@ function Entry({ item }: { item: Assignment }) {
         color.border,
       )}
     >
-      <div className="flex flex-col h-full divide-y divide-inherit transition-opacity group-hover:opacity-0 select-none pointer-events-none">
+      <div
+        className={cn(
+          "flex flex-col h-full divide-y divide-inherit transition-opacity select-none pointer-events-none",
+          {
+            "group-hover:opacity-0": !!setAssignments,
+          },
+        )}
+      >
         <header className="px-2 pb-2 pt-1.5">
           <span className="text-xs font-semibold line-clamp-1 mb-1.5 flex items-center gap-1">
             <Icon size={12} />
@@ -145,19 +191,25 @@ function Entry({ item }: { item: Assignment }) {
           {item.questionCount} questions
         </p>
       </div>
-      <div
-        className="absolute inset-0 flex flex-col cursor-pointer select-none items-center gap-0.5 justify-center opacity-0 transition-opacity group-hover:opacity-100 "
-        onClick={() =>
-          setAssignments((assignments) =>
-            assignments.filter(
-              ({ resourceId }) => resourceId !== item.resourceId,
-            ),
-          )
-        }
-      >
-        <XIcon />
-        <p className="text-sm font-medium">Delete</p>
-      </div>
+
+      <IfValue
+        value={setAssignments}
+        renderItem={(set) => (
+          <div
+            className="absolute inset-0 flex flex-col cursor-pointer select-none items-center gap-0.5 justify-center opacity-0 transition-opacity group-hover:opacity-100 "
+            onClick={() =>
+              set((assignments) =>
+                assignments.filter(
+                  ({ resourceId }) => resourceId !== item.resourceId,
+                ),
+              )
+            }
+          >
+            <XIcon />
+            <p className="text-sm font-medium">Delete</p>
+          </div>
+        )}
+      />
     </div>
   )
 }

@@ -38,9 +38,10 @@ import { useForm } from "react-hook-form"
 
 import { useTranslations } from "next-intl"
 import { z } from "zod"
-import { AssignmentContext } from "./page"
+
 import { If } from "@/components/ui/if"
 import { cn } from "@/lib/utils"
+import { AssignmentContext } from "../assignment-calendar"
 
 const createAssignmentSchema = (
   resources: StudentResourceData[],
@@ -81,7 +82,7 @@ export default function CreateAssignmentForm({
 
   const [open, setOpen] = useState(false)
   const { data } = useStudentResources({ id })
-  const resources = data!
+  const resources = data ?? []
 
   const assignedCounts: Record<string, number> = {}
   for (const assignment of assignments) {
@@ -107,7 +108,7 @@ export default function CreateAssignmentForm({
   async function onSubmit(
     values: z.infer<ReturnType<typeof createAssignmentSchema>>,
   ) {
-    setAssignments([
+    setAssignments?.([
       ...assignments,
       { ...values, day, id: crypto.randomUUID() },
     ])

@@ -1,6 +1,6 @@
 "use client"
 
-import AssignmentCalendar from "@/app/[locale]/dashboard/student/[id]/weekly-assignments/create/assignment-calendar"
+import AssignmentCalendar from "@/app/[locale]/dashboard/student/[id]/weekly-assignments/assignment-calendar"
 import { Button } from "@/components/ui/button"
 import { If } from "@/components/ui/if"
 import { useRouter } from "@/i18n/navigation"
@@ -14,30 +14,9 @@ import { cn, DateUtils } from "@/lib/utils"
 
 import { Loader, PlusCircleIcon } from "lucide-react"
 import { useParams } from "next/navigation"
-import {
-  createContext,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useMemo,
-  useState,
-} from "react"
+import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
-
-type Assignment = {
-  day: number
-  questionCount: number
-  resourceId: string
-  id: string
-}
-
-const AssignmentContext = createContext<{
-  assignments: Assignment[]
-  setAssignments: Dispatch<SetStateAction<Assignment[]>>
-}>({
-  assignments: [],
-  setAssignments: () => {},
-})
+import { Assignment } from "../page"
 
 function CreateAssignments() {
   const [loading, setLoading] = useState(false)
@@ -79,7 +58,7 @@ function CreateAssignments() {
       )
 
       await createAssignment(studentId, {
-        startsOn: DateUtils.getStartOfTheWeek(),
+        startsOn: DateUtils.getStartOfTheCurrentWeek(),
         days: groupedByDay,
       })
 
@@ -107,9 +86,7 @@ function CreateAssignments() {
         <p className="ml-auto text-sm font-medium">July 2025</p>
       </header>
 
-      <AssignmentContext.Provider value={{ assignments, setAssignments }}>
-        <AssignmentCalendar />
-      </AssignmentContext.Provider>
+      <AssignmentCalendar form {...{ assignments, setAssignments }} />
 
       <div className="flex justify-end items-center gap-4 w-full">
         <If
@@ -147,5 +124,4 @@ function CreateAssignments() {
   )
 }
 
-export { type Assignment, AssignmentContext }
 export default CreateAssignments

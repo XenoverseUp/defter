@@ -23,6 +23,7 @@ export function useStudentResources({ id, fallbackData }: Params) {
 
   return {
     ...swr,
+    isStudentResourcesLoading: swr.isLoading,
     key,
   }
 }

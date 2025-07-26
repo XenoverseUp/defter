@@ -60,15 +60,19 @@ export namespace DateUtils {
     return new Intl.DateTimeFormat(locale, options).format(date)
   }
 
-  export function getCurrentWeekdates() {
+  export function getWeekdates(date: Date) {
     return Array.from(Array(7).keys()).map((idx) => {
-      const d = new Date()
+      const d = new Date(date.getTime())
       d.setDate(d.getDate() - ((d.getDay() + 6) % 7) + idx)
       return d
     })
   }
 
-  export function getStartOfTheWeek() {
+  export function getCurrentWeekdates() {
+    return getWeekdates(new Date())
+  }
+
+  export function getStartOfTheCurrentWeek() {
     return getCurrentWeekdates().at(0)!
   }
 

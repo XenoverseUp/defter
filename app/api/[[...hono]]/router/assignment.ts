@@ -154,11 +154,21 @@ export const assignmentRouter = new Hono()
           eq(schema.assignment.studentId, student.id),
           eq(schema.assignment.active, true),
         ),
-        columns: { studentId: false },
+        columns: { id: true, isValidated: true, startsOn: true },
         with: {
           days: {
+            columns: {
+              assignmentId: false,
+              createdAt: false,
+            },
             with: {
-              entries: true,
+              entries: {
+                columns: {
+                  assignmentDayId: false,
+                  createdAt: false,
+                  solvedQuestions: false,
+                },
+              },
             },
           },
         },

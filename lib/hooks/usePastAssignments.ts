@@ -4,25 +4,28 @@ import {
   type PastAssignmentData,
   getPastAssignments,
 } from "../client-services/assignments"
-
-const keyFor = (id: string) => `student-past-assignments/${id}` as const
+import { pastAssignmentKeyFor } from "./keys"
 
 interface Params {
   id: string
-  fallbackData: PastAssignmentData
+  fallbackData?: PastAssignmentData
 }
 
-export function usePastAssignment({ id, fallbackData }: Params) {
-  const key = keyFor(id)
+export function usePastAssignments({ id, fallbackData }: Params) {
+  const key = pastAssignmentKeyFor(id)
 
   const swr = useSWR(key, () => getPastAssignments(id), {
     fallbackData,
     revalidateOnMount: true,
     keepPreviousData: true,
+    refreshWhenHidden: false,
+    refreshInterval: 0,
   })
 
   return {
     ...swr,
+    arePastAssigmentsLoading: swr.isLoading,
+    pastAssignments: swr.data,
     key,
   }
 }
@@ -35,5 +38,5 @@ export function mutatePastAssignment(
     | MutatorCallback<PastAssignmentData[]>,
   opts?: MutatorOptions<PastAssignmentData[]>,
 ) {
-  return mutate<PastAssignmentData[]>(keyFor(id), data, opts)
+  return mutate<PastAssignmentData[]>(pastAssignmentKeyFor(id), data, opts)
 }

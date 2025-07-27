@@ -4,8 +4,7 @@ import {
   type StudentResourceData,
 } from "../client-services/resources"
 import type { UUID } from "crypto"
-
-const keyFor = (id: string) => `students-resources/${id}` as const
+import { resourcesKeyFor } from "./keys"
 
 interface Params {
   id: string | UUID
@@ -13,12 +12,14 @@ interface Params {
 }
 
 export function useStudentResources({ id, fallbackData }: Params) {
-  const key = keyFor(id)
+  const key = resourcesKeyFor(id)
 
   const swr = useSWR(key, () => getStudentResources(id), {
     fallbackData,
     revalidateOnMount: true,
     keepPreviousData: true,
+    refreshWhenHidden: false,
+    refreshInterval: 0,
   })
 
   return {
@@ -36,5 +37,5 @@ export function mutateStudentResources(
     | MutatorCallback<StudentResourceData[]>,
   opts?: MutatorOptions<StudentResourceData[]>,
 ) {
-  return mutate<StudentResourceData[]>(keyFor(id), data, opts)
+  return mutate<StudentResourceData[]>(resourcesKeyFor(id), data, opts)
 }

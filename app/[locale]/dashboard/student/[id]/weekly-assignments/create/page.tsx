@@ -34,14 +34,14 @@ function CreateAssignments() {
     [assignments],
   )
 
-  const { activeAssignment, isLoading } = useActiveAssignment({
+  const { activeAssignment, isActiveAssignmentLoading } = useActiveAssignment({
     id: studentId,
   })
 
   useEffect(() => {
-    if (!isLoading && activeAssignment)
+    if (!isActiveAssignmentLoading && activeAssignment)
       router.replace(`/dashboard/student/${studentId}/weekly-assignments`)
-  }, [activeAssignment, isLoading, router, studentId])
+  }, [activeAssignment, isActiveAssignmentLoading, router, studentId])
 
   async function onSubmit() {
     setLoading(true)
@@ -86,7 +86,11 @@ function CreateAssignments() {
         <p className="ml-auto text-sm font-medium">July 2025</p>
       </header>
 
-      <AssignmentCalendar form {...{ assignments, setAssignments }} />
+      <AssignmentCalendar
+        form
+        {...{ assignments, setAssignments }}
+        loading={isActiveAssignmentLoading}
+      />
 
       <div className="flex justify-end items-center gap-4 w-full">
         <If

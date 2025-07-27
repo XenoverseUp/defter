@@ -4,8 +4,7 @@ import {
   type ActiveAssignmentData,
   getActiveAssignment,
 } from "../client-services/assignments"
-
-const keyFor = (id: string) => `student-active-assignment/${id}` as const
+import { activeAssignmentKeyFor } from "./keys"
 
 interface Params {
   id: string
@@ -13,12 +12,14 @@ interface Params {
 }
 
 export function useActiveAssignment({ id, fallbackData }: Params) {
-  const key = keyFor(id)
+  const key = activeAssignmentKeyFor(id)
 
   const swr = useSWR(key, () => getActiveAssignment(id), {
     fallbackData,
     revalidateOnMount: true,
     keepPreviousData: true,
+    refreshWhenHidden: false,
+    refreshInterval: 0,
   })
 
   return {
@@ -38,5 +39,5 @@ export function mutateActiveAssignment(
     | MutatorCallback<ActiveAssignmentData[]>,
   opts?: MutatorOptions<ActiveAssignmentData[]>,
 ) {
-  return mutate<ActiveAssignmentData[]>(keyFor(id), data, opts)
+  return mutate<ActiveAssignmentData[]>(activeAssignmentKeyFor(id), data, opts)
 }

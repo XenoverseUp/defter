@@ -1,55 +1,67 @@
-"use client";
+"use client"
 
-import { Link } from "@/i18n/navigation";
-import { cn } from "@/lib/utils";
-import { UUID } from "crypto";
-import { BlocksIcon, ChartGanttIcon, NotebookIcon, UserRoundCogIcon } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { Link } from "@/i18n/navigation"
+import { cn } from "@/lib/utils"
+import { UUID } from "crypto"
+import {
+  BlocksIcon,
+  ChartGanttIcon,
+  NotebookIcon,
+  UserRoundCogIcon,
+} from "lucide-react"
+import type { LucideIcon } from "lucide-react"
+import { usePathname } from "next/navigation"
 
 function stripLocale(path: string): string {
-  const segments = path.split("/");
+  const segments = path.split("/")
   if (segments[1]?.length === 2) {
-    return "/" + segments.slice(2).join("/");
+    return "/" + segments.slice(2).join("/")
   }
-  return path;
+  return path
 }
 
 type Tab = {
-  label: string;
-  href: string;
-  icon: LucideIcon;
-};
+  label: string
+  href: string
+  icon: LucideIcon
+}
 
 interface Props {
-  locale: string;
-  id: UUID;
+  locale: string
+  id: UUID
 }
 
 const getTabs = (id: UUID): Tab[] => {
-  const basePath = `/dashboard/student/${id}`;
+  const basePath = `/dashboard/student/${id}`
 
   return [
     { label: "Overview", href: `${basePath}`, icon: BlocksIcon },
     { label: "Resources", href: `${basePath}/resources`, icon: NotebookIcon },
-    { label: "Weekly Assignments", href: `${basePath}/weekly-assignments`, icon: ChartGanttIcon },
+    {
+      label: "Weekly Assignments",
+      href: `${basePath}/weekly-assignments`,
+      icon: ChartGanttIcon,
+    },
     { label: "Bio", href: `${basePath}/bio`, icon: UserRoundCogIcon },
-  ];
-};
+  ]
+}
 
 export default function NavTab({ id, locale }: Props) {
-  const rawPathname = usePathname();
-  const pathname = stripLocale(rawPathname);
+  const rawPathname = usePathname()
+  const pathname = stripLocale(rawPathname)
 
-  const tabs = getTabs(id);
+  const tabs = getTabs(id)
 
   return (
     <div className="flex gap-5 border-b mb-6 pl-4 pr-2">
       {tabs.map((tab, index) => {
-        const href = stripLocale(tab.href);
+        const href = stripLocale(tab.href)
 
-        const isActive = index === 0 ? pathname === href : pathname === href || pathname.startsWith(href + "/");
-        const Icon = tab.icon;
+        const isActive =
+          index === 0
+            ? pathname === href
+            : pathname === href || pathname.startsWith(href + "/")
+        const Icon = tab.icon
 
         return (
           <Link
@@ -59,14 +71,16 @@ export default function NavTab({ id, locale }: Props) {
             prefetch
             className={cn(
               "pb-2 px-0.5 border-b-2 text-sm transition-colors flex items-center gap-1.5",
-              isActive ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground",
+              isActive
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >
             <Icon size={16} strokeWidth={1.5} />
             {tab.label}
           </Link>
-        );
+        )
       })}
     </div>
-  );
+  )
 }

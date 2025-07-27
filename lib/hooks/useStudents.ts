@@ -10,6 +10,8 @@ export function useStudents({ fallbackData }: { fallbackData: StudentData[] }) {
     fallbackData,
     revalidateOnMount: true,
     keepPreviousData: true,
+    refreshWhenHidden: false,
+    refreshInterval: 0,
   })
 
   return swr

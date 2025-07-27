@@ -26,24 +26,22 @@ export const AssignmentContext = createContext<{
   setAssignments: () => {},
 })
 
-type Props =
+type Props = {
+  assignments: Assignment[]
+  loading?: boolean
+} & (
   | {
       form?: true
-      assignments: Assignment[]
       setAssignments: Dispatch<SetStateAction<Assignment[]>>
     }
   | {
       form?: false
-      assignments: Assignment[]
       startsOn: Date
     }
+)
 
 export default function AssignmentCalendar(props: Props) {
-  const { id } = useParams<{ id: string }>()
-
-  const { isLoading } = useStudentResources({ id })
-
-  if (props.form && isLoading) return <AssignmentCalendarSkeleton />
+  if (props.loading) return <AssignmentCalendarSkeleton />
 
   const contextValue = {
     assignments: props.assignments,

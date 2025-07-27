@@ -11,7 +11,7 @@ import {
 import type { UUID } from "crypto"
 import { useParams } from "next/navigation"
 import CreateResource from "./create-resource-form"
-import { StudentData } from "@/lib/client-services/students"
+
 import { subjectEnum } from "@/db/schema"
 
 import { InfoIcon, LoaderIcon, Trash2 } from "lucide-react"
@@ -24,38 +24,32 @@ import { Badge } from "@/components/ui/badge"
 import { StudentUtils } from "@/lib/utils"
 
 import { useTranslations } from "next-intl"
+import { useStudentProfile } from "@/lib/hooks/useStudentProfile"
 
-interface Props {
-  initialData?: StudentResourceData[]
-  profile: Omit<StudentData, "createdAt" | "updatedAt">
-}
-
-export default function ResourceList({ initialData, profile }: Props) {
+export default function ResourceList() {
   const { id } = useParams<{ id: string | UUID }>()
 
-  const { data } = useStudentResources({
-    fallbackData: initialData,
-    id,
-  })
+  const { data: resource } = useStudentResources({ id })
 
-  if (!data) return "Loading..." // !TODO: Skeleton
+  let { data: profile } = useStudentProfile({ id })
+  profile = profile!
 
-  if (data!.length === 0) return <Empty profile={profile} />
+  if (resource!.length === 0) return <Empty profile={profile} />
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground flex items-center gap-1">
           <InfoIcon size={16} />
-          The student currently has {data!.length} resource
-          {data!.length === 1 ? "" : "s"}.
+          The student currently has {resource!.length} resource
+          {resource!.length === 1 ? "" : "s"}.
         </p>
         <CreateResource grade={profile.grade} studentId={profile.id} />
       </div>
 
       <div className="space-y-6 mb-8">
         {subjectEnum.enumValues.map((subject) => {
-          const resources = data!.filter((item) => item.subject === subject)
+          const resources = resource!.filter((item) => item.subject === subject)
 
           if (resources.length === 0) return null
           return (
@@ -82,7 +76,7 @@ function SubjectGroup({ subject, resources, studentId }: SubjectGroupProps) {
 
   return (
     <div>
-      <h3 className="uppercase text-sm font-semibold text-muted-foreground mb-2">
+      <h3 className="uppercase text-sm font-semibold text-muted-foreground mb-2 ml-1">
         {tSubject(subject)}
       </h3>
       <div className="flex flex-col rounded-lg border divide-y shadow-xs">

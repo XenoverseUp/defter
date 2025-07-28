@@ -81,5 +81,20 @@ export async function getActiveAssignment(studentId: string, userId?: string) {
     },
   })
 
-  return assignment
+  if (!assignment) return undefined
+
+  const totalAssignedQuestions = assignment.days.reduce(
+    (sum, day) =>
+      sum +
+      day.entries.reduce(
+        (entrySum, entry) => entrySum + entry.assignedQuestions,
+        0,
+      ),
+    0,
+  )
+
+  return {
+    ...assignment,
+    totalAssignedQuestions,
+  }
 }

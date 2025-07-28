@@ -143,12 +143,7 @@ function Entry({ item }: { item: Assignment }) {
   const resource = data?.find(({ id }) => id === item.resourceId)
   if (!resource) return null
 
-  const color = subjectColors[resource.subject] ?? {
-    bg: "bg-muted",
-    text: "text-foreground",
-    content: "bg-muted/50",
-    border: "",
-  }
+  const color = subjectColors[resource.subject]
 
   const Icon = StudentUtils.subjectIcon(resource.subject)
 
@@ -163,13 +158,14 @@ function Entry({ item }: { item: Assignment }) {
     >
       <div
         className={cn(
-          "flex flex-col h-full divide-y divide-inherit transition-opacity select-none pointer-events-none",
+          "flex flex-col h-full divide-y transition-opacity select-none pointer-events-none",
+          color.border,
           {
             "group-hover:opacity-0": !!setAssignments,
           },
         )}
       >
-        <header className="px-2 pb-2 pt-1.5">
+        <header className="px-2 pb-2 pt-1.5 divide-inherit">
           <span className="text-xs font-semibold line-clamp-1 mb-1.5 flex items-center gap-1">
             <Icon size={12} />
             {tSubject(resource.subject)}
@@ -213,7 +209,7 @@ function Entry({ item }: { item: Assignment }) {
 }
 
 const subjectColors: Record<
-  string,
+  StudentUtils.Subject,
   { bg: string; text: string; content: string; border: string }
 > = {
   // Middle School

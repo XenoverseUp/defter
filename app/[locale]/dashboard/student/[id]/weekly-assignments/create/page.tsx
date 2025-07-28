@@ -44,8 +44,6 @@ function CreateAssignments() {
     }
   }, [activeAssignment, router, studentId])
 
-  if (activeAssignment) return null
-
   async function onSubmit() {
     setLoading(true)
 
@@ -68,7 +66,7 @@ function CreateAssignments() {
       await mutateActiveAssignment(studentId)
 
       toast.success("Assignment created successfully.")
-      router.push(`/dashboard/student/${studentId}/weekly-assignments`)
+      router.push(`/dashboard/student/${studentId}/`)
       router.refresh()
     } catch (err) {
       const e = err as Error

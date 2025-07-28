@@ -1,24 +1,11 @@
 import { Button } from "@/components/ui/button"
-import { If } from "@/components/ui/if"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
 import { Link } from "@/i18n/navigation"
-import { usePastAssignments } from "@/lib/hooks/usePastAssignments"
-import { HistoryIcon, PencilRulerIcon } from "lucide-react"
+import { PencilRulerIcon } from "lucide-react"
 import { useParams } from "next/navigation"
+import AssignmentHistory from "./assignment-history"
 
 export default function Empty() {
   const { id } = useParams<{ id: string }>()
-
-  const { pastAssignments } = usePastAssignments({
-    id,
-  })
 
   return (
     <div className="w-full bg-background relative pt-20 pb-30 rounded-lg flex flex-col items-center justify-center">
@@ -46,33 +33,7 @@ export default function Empty() {
             Assign
           </Link>
         </Button>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button size="sm" variant="outline">
-              <HistoryIcon />
-              Assignment History
-            </Button>
-          </SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle className="flex items-center gap-1.5">
-                <HistoryIcon size={20} />
-                Assignment History
-              </SheetTitle>
-              <SheetDescription>
-                <If
-                  condition={!!pastAssignments?.length}
-                  renderItem={() =>
-                    "There are no records about previous assignments."
-                  }
-                  renderElse={() =>
-                    `${pastAssignments!.length} assignment records are found.`
-                  }
-                />
-              </SheetDescription>
-            </SheetHeader>
-          </SheetContent>
-        </Sheet>
+        <AssignmentHistory />
       </div>
     </div>
   )

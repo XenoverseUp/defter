@@ -10,6 +10,9 @@ import { useActiveAssignment } from "@/lib/hooks/useActiveAssignment"
 
 import Empty from "./empty"
 import { Link } from "@/i18n/navigation"
+import { Button } from "@/components/ui/button"
+import { PencilRulerIcon } from "lucide-react"
+import AssignmentHistory from "./assignment-history"
 
 export default function AssignmentView() {
   const { id } = useParams<{ id: string }>()
@@ -40,9 +43,17 @@ export default function AssignmentView() {
         )}
       />
 
-      <Link href={`/dashboard/student/${id}/weekly-assignments/create`}>
-        Create
-      </Link>
+      <div className="flex items-center gap-4 w-full">
+        <p className="text-xs text-muted-foreground mr-auto">
+          {activeAssignment.totalAssignedQuestions} questions were planned for
+          this week.
+        </p>
+        <AssignmentHistory />
+        <Button size="sm" className="bg-green-500 hover:bg-green-600">
+          <PencilRulerIcon />
+          Validate
+        </Button>
+      </div>
     </div>
   )
 }

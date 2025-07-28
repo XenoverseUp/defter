@@ -13,7 +13,16 @@ import { redirect } from "next/navigation"
 import { getStudentResources } from "@/lib/actions/resources"
 
 import SWRProvider from "@/components/layout/swr-provider"
-import { profileKeyFor, resourcesKeyFor } from "@/lib/hooks/keys"
+import {
+  activeAssignmentKeyFor,
+  pastAssignmentKeyFor,
+  profileKeyFor,
+  resourcesKeyFor,
+} from "@/lib/hooks/keys"
+import {
+  getActiveAssignment,
+  getPastAssignments,
+} from "@/lib/actions/assignments"
 
 export default async function StudentLayout({
   children,
@@ -29,10 +38,13 @@ export default async function StudentLayout({
 
   if (user === null) return redirect("/")
 
-  const [profile, resources] = await Promise.all([
-    getStudentProfile(id, user.id),
-    getStudentResources(id),
-  ])
+  const [profile, resources, activeAssignment, pastAssignments] =
+    await Promise.all([
+      getStudentProfile(id, user.id),
+      getStudentResources(id, user.id),
+      getActiveAssignment(id, user.id),
+      getPastAssignments(id, user.id),
+    ])
   if (!profile) return redirect("/")
 
   const fallback = {
@@ -46,6 +58,11 @@ export default async function StudentLayout({
       createdAt: profile.createdAt.toISOString(),
       updatedAt: profile.updatedAt.toISOString(),
     },
+    [activeAssignmentKeyFor(id)]: activeAssignment,
+    [pastAssignmentKeyFor(id)]: pastAssignments.map((assignment) => ({
+      ...assignment,
+      startsOn: assignment.startsOn.toISOString(),
+    })),
   }
 
   return (

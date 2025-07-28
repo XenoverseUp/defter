@@ -21,13 +21,11 @@ export const requireOwnsStudent = createMiddleware<Env>(async (c, next) => {
     if (!user) return c.json({ error: "Unauthorized" }, 401)
 
     const ownedStudent = await db.query.student.findFirst({
-      where: (s, { eq }) => eq(s.id, studentId),
+      where: (s, { eq, and }) =>
+        and(eq(s.id, studentId), eq(s.userId, user.id)),
     })
 
     if (!ownedStudent) return c.notFound()
-
-    if (ownedStudent.userId !== user.id)
-      return c.json({ error: "Forbidden" }, 403)
 
     c.set("student", ownedStudent)
 

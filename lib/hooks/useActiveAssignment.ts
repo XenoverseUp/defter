@@ -16,10 +16,12 @@ export function useActiveAssignment({ id, fallbackData }: Params) {
 
   const swr = useSWR(key, () => getActiveAssignment(id), {
     fallbackData,
-    revalidateOnMount: true,
+
+    revalidateOnMount: false,
     keepPreviousData: true,
     refreshWhenHidden: false,
     refreshInterval: 0,
+    revalidateOnFocus: false,
   })
 
   return {

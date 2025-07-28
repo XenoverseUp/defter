@@ -14,7 +14,7 @@ import { cn, DateUtils } from "@/lib/utils"
 
 import { Loader, PlusCircleIcon } from "lucide-react"
 import { useParams } from "next/navigation"
-import { useEffect, useMemo, useState } from "react"
+import { useLayoutEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { Assignment } from "../page"
 
@@ -34,14 +34,17 @@ function CreateAssignments() {
     [assignments],
   )
 
-  const { activeAssignment, isActiveAssignmentLoading } = useActiveAssignment({
+  const { activeAssignment } = useActiveAssignment({
     id: studentId,
   })
 
-  useEffect(() => {
-    if (!isActiveAssignmentLoading && activeAssignment)
+  useLayoutEffect(() => {
+    if (activeAssignment) {
       router.replace(`/dashboard/student/${studentId}/weekly-assignments`)
-  }, [activeAssignment, isActiveAssignmentLoading, router, studentId])
+    }
+  }, [activeAssignment, router, studentId])
+
+  if (activeAssignment) return null
 
   async function onSubmit() {
     setLoading(true)
@@ -86,11 +89,7 @@ function CreateAssignments() {
         <p className="ml-auto text-sm font-medium">July 2025</p>
       </header>
 
-      <AssignmentCalendar
-        form
-        {...{ assignments, setAssignments }}
-        loading={isActiveAssignmentLoading}
-      />
+      <AssignmentCalendar form {...{ assignments, setAssignments }} />
 
       <div className="flex justify-end items-center gap-4 w-full">
         <If

@@ -7,7 +7,6 @@ import AssignmentCalendar from "./assignment-calendar"
 import { Assignment } from "./page"
 import { useParams } from "next/navigation"
 import { useActiveAssignment } from "@/lib/hooks/useActiveAssignment"
-import { usePastAssignments } from "@/lib/hooks/usePastAssignments"
 
 import Empty from "./empty"
 import { Link } from "@/i18n/navigation"
@@ -15,15 +14,7 @@ import { Link } from "@/i18n/navigation"
 export default function AssignmentView() {
   const { id } = useParams<{ id: string }>()
 
-  const { activeAssignment, isActiveAssignmentLoading } = useActiveAssignment({
-    id,
-  })
-
-  const { arePastAssigmentsLoading } = usePastAssignments({
-    id,
-  })
-
-  if (isActiveAssignmentLoading || arePastAssigmentsLoading) return "Loading..."
+  const { activeAssignment } = useActiveAssignment({ id })
 
   if (!activeAssignment) return <Empty />
 

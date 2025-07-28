@@ -11,6 +11,10 @@ import { requireOwnsStudent } from "../middleware/requireOwnsStudent"
 import { doesUserOwnStudent } from "@/lib/actions/students"
 
 import { studentIdParamSchema } from "../validator/student"
+import {
+  getActiveAssignment,
+  getPastAssignments,
+} from "@/lib/actions/assignments"
 
 export const assignmentRouter = new Hono()
   .use(getAuth)
@@ -99,43 +103,7 @@ export const assignmentRouter = new Hono()
     async (c) => {
       const { student } = c.var
 
-      const assignments = await db
-        .select({
-          id: schema.assignment.id,
-          startsOn: schema.assignment.startsOn,
-          validated: schema.assignment.isValidated,
-          totalAssigned:
-            sql<number>`COALESCE(SUM(${schema.assignmentEntry.assignedQuestions}), 0)`.as(
-              "totalAssigned",
-            ),
-          totalSolved:
-            sql<number>`COALESCE(SUM(${schema.assignmentEntry.solvedQuestions}), 0)`.as(
-              "totalSolved",
-            ),
-          entryCount: sql<number>`COUNT(${schema.assignmentEntry.id})`.as(
-            "entryCount",
-          ),
-        })
-        .from(schema.assignment)
-        .leftJoin(
-          schema.assignmentDay,
-          eq(schema.assignmentDay.assignmentId, schema.assignment.id),
-        )
-        .leftJoin(
-          schema.assignmentEntry,
-          eq(schema.assignmentEntry.assignmentDayId, schema.assignmentDay.id),
-        )
-        .where(
-          and(
-            eq(schema.assignment.studentId, student.id),
-            eq(schema.assignment.active, false),
-          ),
-        )
-        .groupBy(
-          schema.assignment.id,
-          schema.assignment.startsOn,
-          schema.assignment.isValidated,
-        )
+      const assignments = await getPastAssignments(student.id)
 
       return c.json({ success: true, data: assignments })
     },
@@ -149,32 +117,12 @@ export const assignmentRouter = new Hono()
     async (c) => {
       const { student } = c.var
 
-      const activeAssignment = await db.query.assignment.findFirst({
-        where: and(
-          eq(schema.assignment.studentId, student.id),
-          eq(schema.assignment.active, true),
-        ),
-        columns: { id: true, isValidated: true, startsOn: true },
-        with: {
-          days: {
-            columns: {
-              assignmentId: false,
-              createdAt: false,
-            },
-            with: {
-              entries: {
-                columns: {
-                  assignmentDayId: false,
-                  createdAt: false,
-                  solvedQuestions: false,
-                },
-              },
-            },
-          },
-        },
-      })
+      const activeAssignment = await getActiveAssignment(student.id)
 
-      return c.json({ success: true, data: activeAssignment })
+      return c.json({
+        success: activeAssignment ? true : false,
+        data: activeAssignment,
+      })
     },
   )
 
